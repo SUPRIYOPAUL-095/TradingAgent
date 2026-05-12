@@ -107,7 +107,7 @@ export default function AnalysisDetailPage() {
                 }
 
                 const decisionColor =
-                  decisionColors[decision.decision] ||
+                  decisionColors[decision.action] ||
                   'bg-gray-500/10 border-gray-500/30 text-gray-500'
 
                 return (
