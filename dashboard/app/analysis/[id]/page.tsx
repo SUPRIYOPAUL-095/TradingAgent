@@ -115,15 +115,15 @@ export default function AnalysisDetailPage() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-gray-400 text-sm mb-1">Company</p>
-                        <p className="text-xl font-bold">{decision.company_symbol}</p>
+                        <p className="text-xl font-bold">{decision.symbol}</p>
                       </div>
                       <div>
                         <p className="text-gray-400 text-sm mb-1">Decision</p>
-                        <p className="text-3xl font-bold">{decision.decision}</p>
+                        <p className="text-3xl font-bold">{decision.action}</p>
                       </div>
                       <div>
                         <p className="text-gray-400 text-sm mb-1">Date</p>
-                        <p className="text-sm">{new Date(decision.trade_date).toLocaleDateString()}</p>
+                        <p className="text-sm">{new Date(decision.created_at || '').toLocaleDateString()}</p>
                       </div>
                       <div>
                         <p className="text-gray-400 text-sm mb-1">Confidence</p>
