@@ -163,31 +163,12 @@ export default function AnalysisDetailPage() {
                             {report.agent_name}
                           </p>
                           <p className="text-gray-400 text-sm">
-                            {new Date(report.report_date).toLocaleDateString()} at{' '}
-                            {new Date(report.report_date).toLocaleTimeString()}
+                            {report.created_at ? new Date(report.created_at).toLocaleDateString() : 'N/A'} at{' '}
+                            {report.created_at ? new Date(report.created_at).toLocaleTimeString() : 'N/A'}
                           </p>
-                        </div>
-                        <div>
-                          <p className="text-gray-400 text-sm">Company</p>
-                          <p className="text-lg font-bold text-white">{report.company_name}</p>
                         </div>
                       </div>
                     </div>
-
-                    {report.score !== undefined && (
-                      <div className="mb-4 pb-4 border-b border-trading-border">
-                        <p className="text-gray-400 text-sm mb-2">Score</p>
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 bg-trading-darker rounded-full h-2">
-                            <div
-                              className="bg-blue-500 h-2 rounded-full"
-                              style={{ width: `${(report.score * 100).toFixed(0)}%` }}
-                            ></div>
-                          </div>
-                          <span className="text-sm font-medium">{(report.score * 100).toFixed(0)}%</span>
-                        </div>
-                      </div>
-                    )}
 
                     <div>
                       <p className="text-gray-400 text-sm mb-2">Report</p>
