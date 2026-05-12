@@ -100,11 +100,15 @@ export default function AnalysisDetailPage() {
             <h2 className="text-2xl font-bold mb-4">Trading Decision</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {decisions.map((decision) => {
-                const decisionColor = {
-                  'BUY': 'bg-success/10 border-success/30 text-success',
-                  'SELL': 'bg-danger/10 border-danger/30 text-danger',
-                  'HOLD': 'bg-warning/10 border-warning/30 text-warning',
-                }[decision.decision]
+                const decisionColors: Record<string, string> = {
+                  BUY: 'bg-success/10 border-success/30 text-success',
+                  SELL: 'bg-danger/10 border-danger/30 text-danger',
+                  HOLD: 'bg-warning/10 border-warning/30 text-warning',
+                }
+
+                const decisionColor =
+                  decisionColors[decision.decision] ||
+                  'bg-gray-500/10 border-gray-500/30 text-gray-500'
 
                 return (
                   <div key={decision.id} className={`trading-card p-6 border ${decisionColor}`}>
