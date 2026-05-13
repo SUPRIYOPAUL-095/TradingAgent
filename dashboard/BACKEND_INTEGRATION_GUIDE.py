@@ -266,14 +266,14 @@ The frontend will:
 
 """
 Test with curl:
-curl -X POST http://localhost:8000/analyze \
+curl -X POST https://tradingagent-yndk.onrender.com/analyze \
   -H "Content-Type: application/json" \
   -d '{"company": "TCS", "date": "2024-01-25"}'
 
 Test with Python:
 import requests
 
-url = "http://localhost:8000/analyze"
+url = "https://tradingagent-yndk.onrender.com/analyze"
 data = {
     "company": "TCS",
     "date": "2024-01-25"
@@ -323,7 +323,7 @@ Handle these errors gracefully:
 """
 The frontend at app/dashboard/page.tsx calls your endpoint:
 
-fetch('http://localhost:8000/analyze', {
+fetch('https://tradingagent-yndk.onrender.com/analyze', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',

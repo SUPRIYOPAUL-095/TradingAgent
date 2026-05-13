@@ -284,7 +284,7 @@ Additions to `app/globals.css`:
 
 ### API Endpoint Expected
 ```
-POST http://localhost:8000/analyze
+POST https://tradingagent-yndk.onrender.com/analyze
 {
   "company": "RELIANCE",
   "date": "2024-01-25",
@@ -462,7 +462,7 @@ npm run dev
 ```
 
 ### To Connect Your Backend:
-1. Ensure Python backend runs on `http://localhost:8000`
+1. Ensure Python backend runs on `https://tradingagent-yndk.onrender.com`
 2. Implement `/analyze` endpoint
 3. Dashboard will automatically use live data
 

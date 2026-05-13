@@ -201,7 +201,7 @@ lib/
 
 ### Your Python Backend Needs
 
-1. **Endpoint**: `POST http://localhost:8000/analyze`
+1. **Endpoint**: `POST https://tradingagent-yndk.onrender.com/analyze`
 
 2. **Accept Input**:
 ```json
@@ -410,7 +410,7 @@ npm run dev -- -p 3001
 
 ### Backend not connecting
 - Check if backend is running
-- Verify URL: `http://localhost:8000`
+- Verify URL: `https://tradingagent-yndk.onrender.com`
 - Check CORS headers
 - Dashboard uses mock data as fallback
 

@@ -40,7 +40,7 @@ A modern, professional trading dashboard built with Next.js 14, React, and Tailw
 
 **Backend Integration:**
 - Fetch API for HTTP requests
-- Expected backend: `http://localhost:8000/analyze`
+- Expected backend: `https://tradingagent-yndk.onrender.com/analyze`
 - Mock data fallback for development
 
 ## Installation
@@ -65,7 +65,7 @@ Navigate to `http://localhost:3000/dashboard`
 Your Python backend should expose an endpoint:
 
 ```
-POST http://localhost:8000/analyze
+POST https://tradingagent-yndk.onrender.com/analyze
 ```
 
 **Request:**
@@ -163,7 +163,7 @@ The dashboard displays:
 Update the fetch URL in `app/dashboard/page.tsx`:
 
 ```typescript
-const response = await fetch('http://localhost:8000/analyze', {
+const response = await fetch('https://tradingagent-yndk.onrender.com/analyze', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -257,7 +257,7 @@ npm start
 
 ### API Not Connecting
 
-1. Check if backend is running on `http://localhost:8000`
+1. Check if backend is running on `https://tradingagent-yndk.onrender.com`
 2. Verify CORS is enabled on backend
 3. Check browser console for errors
 4. Dashboard uses mock data as fallback

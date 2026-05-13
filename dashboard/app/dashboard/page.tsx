@@ -110,7 +110,7 @@ export default function DashboardPage() {
     await new Promise(resolve => setTimeout(resolve, 6000))
 
     try {
-      const response = await fetch('http://localhost:8000/analyze', {
+      const response = await fetch('https://tradingagent-yndk.onrender.com/analyze', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

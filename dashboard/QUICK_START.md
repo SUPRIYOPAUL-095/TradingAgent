@@ -51,7 +51,7 @@ npm run dev
 python app.py  # or your startup command
 ```
 
-Ensure your backend is running on: `http://localhost:8000`
+Ensure your backend is running on: `https://tradingagent-yndk.onrender.com`
 
 ### Step 2: Setup Endpoint
 
@@ -136,7 +136,7 @@ npm run dev -- -p 3001
 
 ### Backend Not Connecting
 1. Check if backend is running
-2. Verify it's on `http://localhost:8000`
+2. Verify it's on `https://tradingagent-yndk.onrender.com`
 3. Check browser console for errors
 4. Dashboard will use mock data as fallback
 

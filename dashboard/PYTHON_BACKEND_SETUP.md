@@ -9,7 +9,7 @@
 - ✅ Responsive design (mobile, tablet, desktop) active
 
 ### 2. Python Backend Connection
-- ✅ **AnalysisForm** now attempts to connect to Python backend at `http://localhost:8000`
+- ✅ **AnalysisForm** now attempts to connect to Python backend at `https://tradingagent-yndk.onrender.com`
 - ✅ Graceful fallback to mock data if backend unavailable
 - ✅ Selected analysts passed to backend for targeted analysis
 - ✅ Error messages show connection status
@@ -22,7 +22,7 @@
 
 Your dashboard expects a POST endpoint at:
 ```
-http://localhost:8000/analyze
+https://tradingagent-yndk.onrender.com/analyze
 ```
 
 ### Request Format
@@ -107,7 +107,7 @@ python -m cli.main
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-**Verify it's running:** Open `http://localhost:8000/docs` in your browser (FastAPI Swagger UI)
+**Verify it's running:** Open `https://tradingagent-yndk.onrender.com/docs` in your browser (FastAPI Swagger UI)
 
 ### Step 2: Frontend is Already Running
 
@@ -129,7 +129,7 @@ npm run dev
 
 ```bash
 # From PowerShell
-curl -X POST http://localhost:8000/analyze `
+curl -X POST https://tradingagent-yndk.onrender.com/analyze `
   -ContentType "application/json" `
   -Body @"
 {
@@ -159,7 +159,7 @@ When you submit an analysis:
 ```
 User Input
     ↓
-Dashboard API Call to Python Backend (http://localhost:8000/analyze)
+Dashboard API Call to Python Backend (https://tradingagent-yndk.onrender.com/analyze)
     ↓
 Python Backend Multi-Agent System
   • Market Analyst (1 sec) → Technical indicators
@@ -266,7 +266,7 @@ If the Python backend is unavailable, the dashboard automatically uses mock data
 ### Issue: 404 Not Found on `/analyze` endpoint
 **Solution:**
 1. Verify your backend has the `/analyze` POST endpoint
-2. Check endpoint URL matches: `http://localhost:8000/analyze`
+2. Check endpoint URL matches: `https://tradingagent-yndk.onrender.com/analyze`
 3. Verify request body format matches expected JSON structure
 
 ### Issue: Frontend seems unstyled
@@ -300,7 +300,7 @@ All pages are now styled and functional:
 - Fully responsive layout
 
 ✅ **Python Backend Integration**
-- Automatic connection to `http://localhost:8000`
+- Automatic connection to `https://tradingagent-yndk.onrender.com`
 - Selected analyst passing
 - Error handling with fallback
 - Real-time progress tracking

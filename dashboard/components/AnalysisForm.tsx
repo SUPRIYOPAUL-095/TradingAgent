@@ -48,7 +48,7 @@ export default function AnalysisForm({ onSubmit, loading }: AnalysisFormProps) {
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), 3000) // 3 second timeout
 
-        const response = await fetch('http://localhost:8000/analyze', {
+        const response = await fetch('https://tradingagent-yndk.onrender.com/analyze', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
