@@ -194,11 +194,12 @@ class TradingAgentsGraph:
         )
         args = self.propagator.get_graph_args()
         config = {"recursion_limit": 20}
+        args["config"] = config
 
         if self.debug:
             # Debug mode with tracing
             trace = []
-            for chunk in self.graph.stream(init_agent_state, config=config, **args):
+            for chunk in self.graph.stream(init_agent_state, **args):
                 if len(chunk["messages"]) == 0:
                     pass
                 else:
@@ -208,7 +209,7 @@ class TradingAgentsGraph:
             final_state = trace[-1]
         else:
             # Standard mode without tracing
-            final_state = self.graph.invoke(init_agent_state, config=config, **args)
+            final_state = self.graph.invoke(init_agent_state, **args)
 
         # Store current state for reflection
         self.curr_state = final_state
