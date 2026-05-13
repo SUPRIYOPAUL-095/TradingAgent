@@ -41,14 +41,20 @@ def create_market_analyst(llm):
         chain = prompt | llm
 
         stock_data = get_stock_data.invoke({
-            "symbol": ticker + ".NS",
+            "symbol": ticker,
             "start_date": "2025-12-17",
             "end_date": current_date
         })
 
-        result = chain.invoke(
-            f"Analyze this stock data and give BUY/HOLD/SELL recommendation:\n{stock_data}"
-        )
+        from langchain_core.messages import HumanMessage
+
+        result = chain.invoke({
+            "messages": [
+                HumanMessage(
+                    content=f"Analyze this stock data and give BUY/HOLD/SELL recommendation:\n{stock_data}"
+                )
+            ]
+        })
 
         report = ""
 
