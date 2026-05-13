@@ -195,6 +195,7 @@ class TradingAgentsGraph:
         args = self.propagator.get_graph_args()
         config = {"recursion_limit": 20}
         args["config"] = config
+        args["recursion_limit"] = 5
 
         if self.debug:
             # Debug mode with tracing
