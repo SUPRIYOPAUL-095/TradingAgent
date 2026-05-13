@@ -60,6 +60,9 @@ class OpenAIClient(BaseLLMClient):
             llm_kwargs["api_key"] = "ollama"  # Ollama doesn't require auth
         elif self.base_url:
             llm_kwargs["base_url"] = self.base_url
+        else:
+            # Default to Groq URL as requested by user for this pipeline
+            llm_kwargs["base_url"] = "https://api.groq.com/openai/v1"
 
         for key in ("timeout", "max_retries", "reasoning_effort", "api_key", "callbacks"):
             if key in self.kwargs:

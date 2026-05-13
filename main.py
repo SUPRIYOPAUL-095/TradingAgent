@@ -2,20 +2,18 @@ from fastapi import FastAPI
 import yfinance as yf
 from stockstats import StockDataFrame
 from tradingagents.dataflows.config import get_config
-from tradingagents.llm_clients.factory import create_llm_client
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage
 import os
 
 app = FastAPI()
 
 # Initialize LLM client
-config = get_config()
-llm_client = create_llm_client(
-    provider=config.get("llm_provider", "openai"),
-    model=config.get("quick_think_llm", "gpt-5-mini"),
-    base_url=config.get("backend_url")
+llm = ChatOpenAI(
+    api_key=os.getenv("OPENAI_API_KEY"),
+    base_url="https://api.groq.com/openai/v1",
+    model="llama-3.1-8b-instant"
 )
-llm = llm_client.get_llm()
 
 @app.get("/")
 def home():
