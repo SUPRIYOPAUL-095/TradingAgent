@@ -4,7 +4,7 @@ app = FastAPI()
 
 @app.get("/")
 def home():
-    return {"status": "Trading Agent Running"}
+    return {"status": "Trading Agent Running v2"}
 
 @app.get("/analyze")
 def analyze(symbol: str):
