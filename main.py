@@ -24,8 +24,8 @@ config["data_vendors"] = {
     "news_data": "yfinance",                 # Options: alpha_vantage, yfinance
 }
 
-# Initialize with custom config
-ta = TradingAgentsGraph(debug=True, config=config)
+# Initialize with custom config - use only market analyst to avoid recursion
+ta = TradingAgentsGraph(selected_analysts=["market"], debug=True, config=config)
 
 
 company_symbol = str(os.environ.get("COMPANY_NAME"))
