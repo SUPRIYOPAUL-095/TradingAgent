@@ -70,6 +70,7 @@ Volume-Based Indicators:
 
         chain = prompt | llm.bind_tools(tools)
 
+        state["messages"] = state["messages"][-5:]
         result = chain.invoke(state["messages"])
 
         report = ""
