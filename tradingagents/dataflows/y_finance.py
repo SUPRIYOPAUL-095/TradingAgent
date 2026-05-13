@@ -2,6 +2,7 @@ from typing import Annotated
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import yfinance as yf
+import pandas as pd
 import os
 from .stockstats_utils import StockstatsUtils
 
@@ -20,24 +21,14 @@ def get_YFin_data_online(
     # Fetch historical data for the specified date range
     try:
         data = ticker.history(start=start_date, end=end_date)
+
+        if data.empty:
+            print("No stock data found")
+            return pd.DataFrame()
+
     except Exception as e:
         print("Yahoo Finance rate limit:", e)
-
-        import pandas as pd
-
-        data = pd.DataFrame({
-            "Open": [100],
-            "High": [110],
-            "Low": [95],
-            "Close": [105],
-            "Volume": [1000000]
-        })
-
-    # Check if data is empty
-    if data.empty:
-        return (
-            f"No data found for symbol '{symbol}' between {start_date} and {end_date}"
-        )
+        return pd.DataFrame()
 
     # Remove timezone info from index for cleaner output
     if data.index.tz is not None:
