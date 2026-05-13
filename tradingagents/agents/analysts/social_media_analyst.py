@@ -44,7 +44,7 @@ def create_social_media_analyst(llm):
 
         chain = prompt | llm.bind_tools(tools)
 
-        messages = state["messages"][-1:]
+        messages = state["messages"][-2:]
         result = chain.invoke(messages)
 
         report = ""

@@ -43,7 +43,7 @@ def create_news_analyst(llm):
         prompt = prompt.partial(ticker=ticker)
 
         chain = prompt | llm.bind_tools(tools)
-        messages = state["messages"][-1:]
+        messages = state["messages"][-2:]
         result = chain.invoke(messages)
 
         report = ""
