@@ -12,19 +12,9 @@ def create_market_analyst(llm):
         ticker = state["company_of_interest"]
         company_name = state["company_of_interest"]
 
-        tools = [
-            get_stock_data,
-            get_indicators,
-        ]
+        tools = [get_stock_data]
 
-        system_message = (
-            """You are a trading assistant analyzing financial markets. Analyze using these key indicators:
-- RSI: Momentum (overbought/oversold at 70/30)
-- MACD: Trend change signals via crossovers
-- close_50_sma: Medium-term trend direction
-
-Steps: 1) Call get_stock_data to fetch CSV, 2) Call get_indicators with rsi, macd, close_50_sma, 3) Write concise technical analysis with actionable insights."""
-        )
+        system_message = "Fetch stock data and give a short analysis."
 
         prompt = ChatPromptTemplate.from_messages(
             [
@@ -48,10 +38,17 @@ Steps: 1) Call get_stock_data to fetch CSV, 2) Call get_indicators with rsi, mac
         prompt = prompt.partial(current_date=current_date)
         prompt = prompt.partial(ticker=ticker)
 
-        chain = prompt | llm.bind_tools(tools)
+        chain = prompt | llm
 
-        messages = state["messages"][-2:]
-        result = chain.invoke(messages)
+        stock_data = get_stock_data(
+            symbol=ticker + ".NS",
+            start_date="2025-12-17",
+            end_date=current_date
+        )
+
+        result = chain.invoke(
+            f"Analyze this stock data and give BUY/HOLD/SELL recommendation:\n{stock_data}"
+        )
 
         report = ""
 
