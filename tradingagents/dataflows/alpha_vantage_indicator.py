@@ -28,9 +28,6 @@ def get_indicator(
     from dateutil.relativedelta import relativedelta
 
     supported_indicators = {
-        "close_50_sma": ("50 SMA", "close"),
-        "close_200_sma": ("200 SMA", "close"),
-        "close_10_ema": ("10 EMA", "close"),
         "macd": ("MACD", "close"),
         "macds": ("MACD Signal", "close"),
         "macdh": ("MACD Histogram", "close"),
@@ -43,9 +40,7 @@ def get_indicator(
     }
 
     indicator_descriptions = {
-        "close_50_sma": "50 SMA: A medium-term trend indicator. Usage: Identify trend direction and serve as dynamic support/resistance. Tips: It lags price; combine with faster indicators for timely signals.",
-        "close_200_sma": "200 SMA: A long-term trend benchmark. Usage: Confirm overall market trend and identify golden/death cross setups. Tips: It reacts slowly; best for strategic trend confirmation rather than frequent trading entries.",
-        "close_10_ema": "10 EMA: A responsive short-term average. Usage: Capture quick shifts in momentum and potential entry points. Tips: Prone to noise in choppy markets; use alongside longer averages for filtering false signals.",
+
         "macd": "MACD: Computes momentum via differences of EMAs. Usage: Look for crossovers and divergence as signals of trend changes. Tips: Confirm with other indicators in low-volatility or sideways markets.",
         "macds": "MACD Signal: An EMA smoothing of the MACD line. Usage: Use crossovers with the MACD line to trigger trades. Tips: Should be part of a broader strategy to avoid false positives.",
         "macdh": "MACD Histogram: Shows the gap between the MACD line and its signal. Usage: Visualize momentum strength and spot divergence early. Tips: Can be volatile; complement with additional filters in fast-moving markets.",
@@ -74,31 +69,7 @@ def get_indicator(
 
     try:
         # Get indicator data for the period
-        if indicator == "close_50_sma":
-            data = _make_api_request("SMA", {
-                "symbol": symbol,
-                "interval": interval,
-                "time_period": "50",
-                "series_type": series_type,
-                "datatype": "csv"
-            })
-        elif indicator == "close_200_sma":
-            data = _make_api_request("SMA", {
-                "symbol": symbol,
-                "interval": interval,
-                "time_period": "200",
-                "series_type": series_type,
-                "datatype": "csv"
-            })
-        elif indicator == "close_10_ema":
-            data = _make_api_request("EMA", {
-                "symbol": symbol,
-                "interval": interval,
-                "time_period": "10",
-                "series_type": series_type,
-                "datatype": "csv"
-            })
-        elif indicator == "macd":
+        if indicator == "macd":
             data = _make_api_request("MACD", {
                 "symbol": symbol,
                 "interval": interval,

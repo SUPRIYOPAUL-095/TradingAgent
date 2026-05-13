@@ -15,6 +15,8 @@ config["backend_url"]= "https://api.groq.com/openai/v1"
 config["deep_think_llm"] = "llama-3.1-8b-instant"  # Use cheaper, faster model
 config["quick_think_llm"] = "llama-3.1-8b-instant"  # Use cheaper, faster model
 config["max_debate_rounds"] = 1  # Increase debate rounds
+config["selected_indicators"] = []
+
 
 # Configure data vendors (default uses yfinance, no extra API keys needed)
 config["data_vendors"] = {

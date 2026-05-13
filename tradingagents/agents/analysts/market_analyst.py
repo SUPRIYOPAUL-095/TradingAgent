@@ -40,11 +40,11 @@ def create_market_analyst(llm):
 
         chain = prompt | llm
 
-        stock_data = get_stock_data(
-            symbol=ticker + ".NS",
-            start_date="2025-12-17",
-            end_date=current_date
-        )
+        stock_data = get_stock_data.invoke({
+            "symbol": ticker + ".NS",
+            "start_date": "2025-12-17",
+            "end_date": current_date
+        })
 
         result = chain.invoke(
             f"Analyze this stock data and give BUY/HOLD/SELL recommendation:\n{stock_data}"
