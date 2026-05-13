@@ -50,7 +50,7 @@ Steps: 1) Call get_stock_data to fetch CSV, 2) Call get_indicators with rsi, mac
 
         chain = prompt | llm.bind_tools(tools)
 
-        messages = state["messages"][-2:]
+        messages = state["messages"][-1:]
         result = chain.invoke(messages)
 
         report = ""
