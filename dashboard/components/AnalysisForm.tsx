@@ -37,46 +37,9 @@ export default function AnalysisForm({ onSubmit, loading }: AnalysisFormProps) {
 
     setError('')
     try {
-      // Get selected analysts
-      const selectedAnalystsList = Object.entries(selectedAnalysts)
-        .filter(([_, selected]) => selected)
-        .map(([analyst]) => analyst)
-
-      // Try to call Python backend (with timeout)
-      let backendError = false
-      try {
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 3000) // 3 second timeout
-
-        const response = await fetch('https://tradingagent-yndk.onrender.com/analyze', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            company: company.toUpperCase(),
-            date,
-            analysts: selectedAnalystsList,
-          }),
-          signal: controller.signal,
-        })
-
-        clearTimeout(timeoutId)
-
-        if (!response.ok) {
-          backendError = true
-        }
-      } catch (err) {
-        backendError = true
-      }
-
-      // Proceed with analysis (use mock data if backend unavailable)
+      // Proceed with analysis
       await onSubmit(company.toUpperCase(), date)
       setCompany('')
-      
-      if (backendError) {
-        setError('⚠ Backend unavailable - using mock data for demo')
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     }

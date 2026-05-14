@@ -110,45 +110,35 @@ export default function DashboardPage() {
     await new Promise(resolve => setTimeout(resolve, 6000))
 
     try {
-      const response = await fetch('https://tradingagent-yndk.onrender.com/analyze', {
-        method: 'POST',
+      const response = await fetch(`https://tradingagent-yndk.onrender.com/analyze?symbol=${company}`, {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
-        body: JSON.stringify({
-          company,
-          date,
-        }),
       })
 
       if (!response.ok) {
-        throw new Error('Failed to get analysis')
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Backend Error:', errorData)
+        throw new Error(`Backend Error: ${response.status} ${response.statusText}`)
       }
 
       const data = await response.json()
+      console.log('Backend Response:', data)
 
       const analysisResult: AnalysisResult = {
-        company_symbol: company,
+        company_symbol: data.symbol || company,
         analysis_date: date,
-        decision: data.decision || 'BUY',
-        confidence: data.confidence || 78,
-        risk: data.risk || 'Medium',
-        explanation:
-          data.explanation ||
-          `Based on comprehensive market analysis:\n• Technical indicators show strong bullish momentum\n• Volume trends indicate institutional buying\n• Support levels are holding above key thresholds\n• Recent news sentiment is positive\n• Fundamental metrics suggest undervaluation\n• Entry point is favorable for swing traders\n• Risk-reward ratio is attractive at current levels`,
+        decision: (data.signal as 'BUY' | 'SELL' | 'HOLD') || 'HOLD',
+        confidence: data.rsi ? (data.rsi > 70 || data.rsi < 30 ? 85 : 65) : 75,
+        risk: data.rsi ? (data.rsi > 80 || data.rsi < 20 ? 'High' : 'Medium') : 'Medium',
+        explanation: data.summary || 'No detailed analysis summary provided by backend.',
       }
 
       setResult(analysisResult)
     } catch (err) {
-      const mockResult: AnalysisResult = {
-        company_symbol: company,
-        analysis_date: date,
-        decision: 'BUY',
-        confidence: 82,
-        risk: 'Medium',
-        explanation: `Comprehensive AI Analysis for ${company}:\n• Technical: Strong bullish momentum with multiple crossovers (RSI: 68, MACD positive)\n• Volume: Institutional buying across all time frames with 150% avg volume\n• Support: Key levels holding firm with major support at -2.5%\n• Sentiment: Positive news flow and favorable social sentiment (+12%)\n• Fundamentals: Undervalued vs peers with strong earnings growth (+24% YoY)\n• Entry: Favorable for swing traders with proper risk management\n• Risk-Reward: Attractive at current levels (1.8:1 ratio)\n• Action: BUY on dips with stop loss at support level`,
-      }
-      setResult(mockResult)
+      console.error('Frontend Fetch Error:', err)
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred connecting to the backend.')
     } finally {
       setLoading(false)
     }

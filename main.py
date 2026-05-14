@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import yfinance as yf
 from stockstats import StockDataFrame
 from tradingagents.dataflows.config import get_config
@@ -7,6 +8,21 @@ from langchain_core.messages import HumanMessage
 import os
 
 app = FastAPI()
+
+# Configure CORS
+origins = [
+    "https://trading-agent-ai-two.vercel.app",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_origin_regex="https://.*\.vercel\.app",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Initialize LLM client
 llm = ChatOpenAI(
