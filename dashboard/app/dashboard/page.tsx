@@ -76,38 +76,10 @@ export default function DashboardPage() {
   const [error, setError] = useState('')
   const [agentStatuses, setAgentStatuses] = useState<AgentStatus[]>(AGENT_WORKFLOW)
 
-  // Simulate agent workflow
-  useEffect(() => {
-    if (loading) {
-      const agents = [...AGENT_WORKFLOW]
-      let currentAgent = 0
-
-      const interval = setInterval(() => {
-        if (currentAgent < agents.length) {
-          agents[currentAgent].status = 'in_progress'
-          setAgentStatuses([...agents])
-
-          setTimeout(() => {
-            agents[currentAgent].status = 'completed'
-            setAgentStatuses([...agents])
-            currentAgent++
-          }, 800)
-        } else {
-          clearInterval(interval)
-        }
-      }, 1000)
-
-      return () => clearInterval(interval)
-    }
-  }, [loading])
-
   const handleAnalysis = async (company: string, date: string) => {
     setLoading(true)
     setError('')
     setAgentStatuses(AGENT_WORKFLOW.map(a => ({ ...a, status: 'pending' })))
-
-    // Simulate workflow progression
-    await new Promise(resolve => setTimeout(resolve, 6000))
 
     try {
       const response = await fetch(`https://tradingagent-yndk.onrender.com/analyze?symbol=${company}`, {

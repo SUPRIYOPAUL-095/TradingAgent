@@ -38,78 +38,17 @@ interface BacktestResult {
   sharpeRatio: number
 }
 
-const mockTradeHistory: TradeRecord[] = [
-  {
-    id: '1',
-    company: 'RELIANCE.NS',
-    decision: 'BUY',
-    entryDate: '2024-01-25',
-    exitDate: '2024-02-01',
-    entryPrice: 2850,
-    exitPrice: 2920,
-    returnPercent: 2.46,
-    confidence: 82,
-    status: 'won',
-  },
-  {
-    id: '2',
-    company: 'TCS.NS',
-    decision: 'BUY',
-    entryDate: '2024-01-23',
-    exitDate: '2024-02-05',
-    entryPrice: 3680,
-    exitPrice: 3750,
-    returnPercent: 1.90,
-    confidence: 78,
-    status: 'won',
-  },
-  {
-    id: '3',
-    company: 'INFY.NS',
-    decision: 'SELL',
-    entryDate: '2024-01-20',
-    exitDate: '2024-01-28',
-    entryPrice: 1680,
-    exitPrice: 1620,
-    returnPercent: 3.57,
-    confidence: 71,
-    status: 'won',
-  },
-  {
-    id: '4',
-    company: 'WIPRO.NS',
-    decision: 'BUY',
-    entryDate: '2024-01-18',
-    exitDate: '2024-01-30',
-    entryPrice: 580,
-    exitPrice: 560,
-    returnPercent: -3.45,
-    confidence: 65,
-    status: 'lost',
-  },
-  {
-    id: '5',
-    company: 'HDFC.NS',
-    decision: 'HOLD',
-    entryDate: '2024-01-15',
-    exitDate: '2024-02-02',
-    entryPrice: 1750,
-    exitPrice: 1785,
-    returnPercent: 2.00,
-    confidence: 72,
-    status: 'won',
-  },
-]
+const mockTradeHistory: TradeRecord[] = []
 
 const backtestResults: BacktestResult = {
-  totalTrades: 24,
-  winRate: 70.8,
-  profitFactor: 2.45,
-  totalReturn: 18.5,
-  avgWin: 2.12,
-  avgLoss: -1.85,
-  maxDrawdown: -8.3,
-  sharpeRatio: 1.78,
+  totalTrades: 0,
+  winRate: 0,
+  profitFactor: 0,
+  totalReturn: 0,
+  avgWin: 0,
+  avgLoss: 0,
+  maxDrawdown: 0,
+  sharpeRatio: 0,
 }
 
 export default function HistoryPage() {

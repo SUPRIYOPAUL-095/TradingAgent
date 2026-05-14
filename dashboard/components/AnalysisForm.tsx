@@ -73,7 +73,7 @@ export default function AnalysisForm({ onSubmit, loading }: AnalysisFormProps) {
                 type="text"
                 value={company}
                 onChange={e => setCompany(e.target.value.toUpperCase())}
-                placeholder="e.g., RELIANCE, TCS"
+                placeholder="Enter symbol (e.g. RELIANCE.NS)"
                 disabled={loading}
                 className="w-full pl-10 pr-4 py-3 bg-slate-700/50 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all disabled:opacity-50"
               />
