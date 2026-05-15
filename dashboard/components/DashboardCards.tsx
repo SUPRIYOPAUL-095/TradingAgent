@@ -91,12 +91,6 @@ export default function DashboardCards({
             <p className="text-xl font-bold text-indigo-400">{sma50}</p>
           </div>
         </div>
-        <div className="mt-4 pt-4 border-t border-slate-700/50">
-          <div className="flex justify-between items-center">
-            <span className="text-xs text-slate-400">Trend Strength</span>
-            <span className="text-xs font-semibold text-blue-400">Positive</span>
-          </div>
-        </div>
       </div>
 
       {/* Risk Level Card */}

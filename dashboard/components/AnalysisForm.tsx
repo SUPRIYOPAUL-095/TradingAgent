@@ -59,13 +59,20 @@ export default function AnalysisForm({ onSubmit, loading }: AnalysisFormProps) {
           </div>
 
           {/* Date Input */}
-          <div className="hidden">
-            {/* Kept hidden for now to maintain layout but remove from UI if not needed */}
-            <input type="date" value={date} onChange={e => setDate(e.target.value)} />
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Analysis Date</label>
+            <input
+              type="date"
+              value={date}
+              onChange={e => setDate(e.target.value)}
+              disabled={loading}
+              className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 text-white rounded-lg focus:outline-none focus:border-blue-500 transition-all disabled:opacity-50"
+            />
+            <p className="text-xs text-slate-500 mt-1">Select date for historical analysis</p>
           </div>
 
           {/* Submit Button */}
-          <div className="flex items-end md:col-span-2">
+          <div className="flex items-end md:col-span-1">
             <button
               type="submit"
               disabled={loading}

@@ -17,6 +17,7 @@ interface AnalysisResult {
   rsi: number
   sma20: number
   sma50: number
+  history: Array<{ date: string; price: number }>
 }
 
 export default function DashboardPage() {
@@ -29,7 +30,7 @@ export default function DashboardPage() {
     setError('')
 
     try {
-      const response = await fetch(`https://tradingagent-yndk.onrender.com/analyze?symbol=${company}`, {
+      const response = await fetch(`https://tradingagent-yndk.onrender.com/analyze?symbol=${company}&date=${date}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -41,10 +42,14 @@ export default function DashboardPage() {
       }
 
       const data = await response.json()
+      
+      if (data.error) {
+        throw new Error(data.error)
+      }
 
       const analysisResult: AnalysisResult = {
         company_symbol: data.symbol || company,
-        analysis_date: date,
+        analysis_date: data.date || date,
         decision: (data.signal as 'BUY' | 'SELL' | 'HOLD') || 'HOLD',
         confidence: data.rsi ? (data.rsi > 70 || data.rsi < 30 ? 85 : 65) : 75,
         risk: data.rsi ? (data.rsi > 80 || data.rsi < 20 ? 'High' : 'Medium') : 'Medium',
@@ -52,11 +57,13 @@ export default function DashboardPage() {
         rsi: data.rsi,
         sma20: data.sma20,
         sma50: data.sma50,
+        history: data.history || []
       }
 
       setResult(analysisResult)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
+      setResult(null)
     } finally {
       setLoading(false)
     }
@@ -73,6 +80,17 @@ export default function DashboardPage() {
 
         {/* Analysis Form */}
         <AnalysisForm onSubmit={handleAnalysis} loading={loading} />
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-6 flex items-start gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="text-red-500 text-2xl">⚠</div>
+            <div>
+              <h3 className="text-red-400 font-bold mb-1">Analysis Failed</h3>
+              <p className="text-red-400/80 text-sm">{error}</p>
+            </div>
+          </div>
+        )}
 
         {/* Loading State */}
         {loading && (
@@ -95,7 +113,7 @@ export default function DashboardPage() {
               sma50={result.sma50}
             />
 
-            <ChartSection />
+            <ChartSection data={result.history} />
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
               <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
@@ -103,8 +121,8 @@ export default function DashboardPage() {
                 <p className="text-2xl font-bold text-white">{result.company_symbol}</p>
               </div>
               <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
-                <p className="text-slate-400 text-sm mb-2">RSI (14)</p>
-                <p className="text-2xl font-bold text-blue-400">{result.rsi}</p>
+                <p className="text-slate-400 text-sm mb-2">Analysis Date</p>
+                <p className="text-2xl font-bold text-blue-400">{result.analysis_date}</p>
               </div>
               <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
                 <p className="text-slate-400 text-sm mb-2">SMA (20)</p>

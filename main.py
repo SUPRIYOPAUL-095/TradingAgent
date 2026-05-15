@@ -34,21 +34,43 @@ llm = ChatGoogleGenerativeAI(
 def home():
     return {"status": "Trading Agent Running"}
 
+from datetime import datetime, timedelta
+import pandas as pd
+
 @app.get("/analyze")
-def analyze(symbol: str):
+def analyze(symbol: str, date: str = None):
     ticker = yf.Ticker(symbol)
-    # Fetch enough data for indicators (SMA50 needs at least 50 days)
-    data = ticker.history(period="1y")
+    
+    # Fetch data up to current or specified date
+    end_date = datetime.now()
+    if date:
+        try:
+            end_date = datetime.strptime(date, "%Y-%m-%d")
+        except ValueError:
+            return {"error": "Invalid date format. Use YYYY-MM-DD"}
+    
+    # Fetch 1 year of data ending at specified date
+    start_date = end_date - timedelta(days=365)
+    data = ticker.history(start=start_date.strftime("%Y-%m-%d"), end=(end_date + timedelta(days=1)).strftime("%Y-%m-%d"))
+    
     if data.empty:
-        return {"error": "No data found for symbol"}
+        return {"error": f"No data found for symbol {symbol} around {date or 'today'}"}
     
     # Use stockstats for indicators
-    stock = StockDataFrame.retype(data)
+    stock = StockDataFrame.retype(data.copy())
     
+    # Get values at the specified date (last row of fetched data)
     rsi = stock['rsi_14'].iloc[-1]
     sma20 = stock['close_20_sma'].iloc[-1]
     sma50 = stock['close_50_sma'].iloc[-1]
     latest_price = data['Close'].iloc[-1]
+    
+    # Prepare history for chart (last 10 trading days)
+    history_data = data.tail(10)
+    history = [
+        {"date": d.strftime("%d %b"), "price": round(float(p), 2)}
+        for d, p in zip(history_data.index, history_data['Close'])
+    ]
     
     # Simple signal logic
     signal = "HOLD"
@@ -60,10 +82,11 @@ def analyze(symbol: str):
     # Lightweight AI Summary
     summary = ""
     try:
+        date_str = date if date else "today"
         prompt = (
             f"Analyze RSI: {round(rsi, 2)}, SMA20: {round(sma20, 2)}, SMA50: {round(sma50, 2)} "
-            f"and latest price: {round(latest_price, 2)} for {symbol}. "
-            "Give BUY/HOLD/SELL in 2 sentences."
+            f"and price: {round(latest_price, 2)} for {symbol} as of {date_str}. "
+            "Give BUY/HOLD/SELL recommendation in 2 sentences based on these technicals."
         )
         response = llm.invoke([HumanMessage(content=prompt)])
         summary = response.content
@@ -72,10 +95,12 @@ def analyze(symbol: str):
     
     return {
         "symbol": symbol,
+        "date": end_date.strftime("%Y-%m-%d"),
         "rsi": round(float(rsi), 2),
         "sma20": round(float(sma20), 2),
         "sma50": round(float(sma50), 2),
         "latest_price": round(float(latest_price), 2),
         "signal": signal,
-        "summary": summary
+        "summary": summary,
+        "history": history
     }

@@ -16,21 +16,9 @@ interface ChartSectionProps {
 }
 
 export default function ChartSection({ data }: ChartSectionProps) {
-  // Mock data if not provided
-  const mockData = [
-    { date: '20 Jan', price: 2300 },
-    { date: '21 Jan', price: 2350 },
-    { date: '22 Jan', price: 2280 },
-    { date: '23 Jan', price: 2420 },
-    { date: '24 Jan', price: 2380 },
-    { date: '25 Jan', price: 2510 },
-    { date: '26 Jan', price: 2580 },
-    { date: '27 Jan', price: 2650 },
-    { date: '28 Jan', price: 2720 },
-    { date: '29 Jan', price: 2780 },
-  ]
+  if (!data || data.length === 0) return null
 
-  const chartData = data || mockData
+  const chartData = data
 
   const minPrice = Math.min(...chartData.map(d => d.price))
   const maxPrice = Math.max(...chartData.map(d => d.price))
