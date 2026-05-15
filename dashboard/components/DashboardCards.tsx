@@ -7,6 +7,9 @@ interface DashboardCardsProps {
   confidence: number
   risk: 'Low' | 'Medium' | 'High'
   explanation: string
+  rsi: number
+  sma20: number
+  sma50: number
 }
 
 export default function DashboardCards({
@@ -14,6 +17,9 @@ export default function DashboardCards({
   confidence,
   risk,
   explanation,
+  rsi,
+  sma20,
+  sma50,
 }: DashboardCardsProps) {
   const decisionConfig = {
     BUY: { color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30', icon: ArrowUp },
@@ -44,17 +50,13 @@ export default function DashboardCards({
             <p className="text-slate-400 text-sm">Recommendation</p>
           </div>
           <div className="text-right">
-            <p className="text-slate-400 text-xs">Confidence Level</p>
+            <p className="text-slate-400 text-xs">Confidence</p>
             <p className={`text-2xl font-bold ${config.color}`}>{confidence}%</p>
           </div>
         </div>
 
         {/* Confidence Progress Bar */}
         <div className="mt-6 space-y-2">
-          <div className="flex justify-between text-xs text-slate-400">
-            <span>Confidence</span>
-            <span>{confidence}%</span>
-          </div>
           <div className="w-full bg-slate-700/50 rounded-full h-2">
             <div
               className={`h-2 rounded-full transition-all duration-500 ${
@@ -70,73 +72,61 @@ export default function DashboardCards({
         </div>
       </div>
 
-      {/* Confidence & Risk Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
-        {/* Risk Level Card */}
-        <div className="bg-slate-700/30 border border-slate-600 rounded-2xl p-6 backdrop-blur-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-slate-300 font-medium text-sm">Risk Level</h3>
-            <AlertCircle className={riskConfig[risk].color} size={20} />
+      {/* Technical Indicators Card */}
+      <div className="bg-slate-700/30 border border-slate-600 rounded-2xl p-6 backdrop-blur-sm flex flex-col justify-between">
+        <h3 className="text-slate-300 font-medium text-sm mb-4 flex items-center gap-2">
+          <CheckCircle className="text-blue-400" size={18} /> Technical Indicators
+        </h3>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center p-3 bg-slate-800/40 rounded-xl border border-slate-700/50">
+            <p className="text-slate-400 text-[10px] uppercase tracking-wider mb-1">RSI</p>
+            <p className="text-xl font-bold text-blue-400">{rsi}</p>
           </div>
-          <p className={`text-2xl font-bold ${riskConfig[risk].color}`}>
-            {riskConfig[risk].label}
-          </p>
-          <p className="text-slate-500 text-xs mt-2">
-            {risk === 'Low' && 'Minimal volatility expected'}
-            {risk === 'Medium' && 'Moderate price movement likely'}
-            {risk === 'High' && 'High volatility possible'}
-          </p>
+          <div className="text-center p-3 bg-slate-800/40 rounded-xl border border-slate-700/50">
+            <p className="text-slate-400 text-[10px] uppercase tracking-wider mb-1">SMA20</p>
+            <p className="text-xl font-bold text-cyan-400">{sma20}</p>
+          </div>
+          <div className="text-center p-3 bg-slate-800/40 rounded-xl border border-slate-700/50">
+            <p className="text-slate-400 text-[10px] uppercase tracking-wider mb-1">SMA50</p>
+            <p className="text-xl font-bold text-indigo-400">{sma50}</p>
+          </div>
         </div>
-
-        {/* Metrics Card */}
-        <div className="bg-slate-700/30 border border-slate-600 rounded-2xl p-6 backdrop-blur-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-slate-300 font-medium text-sm">Score</h3>
-            <CheckCircle className="text-blue-400" size={20} />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <p className="text-slate-400 text-xs mb-1">Strength</p>
-              <p className="text-lg font-bold text-blue-400">{confidence}%</p>
-            </div>
-            <div>
-              <p className="text-slate-400 text-xs mb-1">Signal</p>
-              <p className="text-lg font-bold text-cyan-400">Strong</p>
-            </div>
+        <div className="mt-4 pt-4 border-t border-slate-700/50">
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-slate-400">Trend Strength</span>
+            <span className="text-xs font-semibold text-blue-400">Positive</span>
           </div>
         </div>
       </div>
 
+      {/* Risk Level Card */}
+      <div className="bg-slate-700/30 border border-slate-600 rounded-2xl p-6 backdrop-blur-sm">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-slate-300 font-medium text-sm">Risk Assessment</h3>
+          <AlertCircle className={riskConfig[risk].color} size={20} />
+        </div>
+        <p className={`text-3xl font-bold ${riskConfig[risk].color} mb-2`}>
+          {riskConfig[risk].label}
+        </p>
+        <p className="text-slate-400 text-xs leading-relaxed">
+          {risk === 'Low' && 'Technical indicators suggest stable price action with low volatility.'}
+          {risk === 'Medium' && 'Moderate volatility expected based on current indicator crossovers.'}
+          {risk === 'High' && 'High volatility signals detected. Exercise caution with position sizing.'}
+        </p>
+      </div>
+
       {/* Explanation Panel */}
       <div className="lg:col-span-3 bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700 rounded-2xl p-8 backdrop-blur-sm">
-        <h3 className="text-lg font-bold text-white mb-4">AI Analysis Explanation</h3>
+        <h3 className="text-lg font-bold text-white mb-4">Gemini AI Analysis Summary</h3>
         
-        <div className="space-y-3 max-h-48 overflow-y-auto pr-4">
+        <div className="space-y-4">
           {explanation.split('\n').filter(line => line.trim()).map((line, idx) => (
-            <div key={idx} className="flex gap-3">
-              <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
+            <div key={idx} className="flex gap-4">
+              <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
               <p className="text-slate-300 text-sm leading-relaxed">{line.trim()}</p>
             </div>
           ))}
         </div>
-
-        {/* Custom Scrollbar */}
-        <style>{`
-          .overflow-y-auto::-webkit-scrollbar {
-            width: 6px;
-          }
-          .overflow-y-auto::-webkit-scrollbar-track {
-            background: rgba(30, 41, 59, 0.5);
-            border-radius: 10px;
-          }
-          .overflow-y-auto::-webkit-scrollbar-thumb {
-            background: rgba(59, 130, 246, 0.3);
-            border-radius: 10px;
-          }
-          .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-            background: rgba(59, 130, 246, 0.5);
-          }
-        `}</style>
       </div>
     </div>
   )

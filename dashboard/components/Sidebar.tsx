@@ -79,13 +79,7 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div className="p-4 border-t border-slate-800">
-        <div className="bg-slate-800/30 rounded-lg p-4 text-center">
-          <p className="text-xs text-slate-400 mb-2">Premium</p>
-          <p className="text-sm font-semibold text-slate-200 mb-3">Upgrade for more</p>
-          <button className="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg text-sm font-medium hover:shadow-lg transition-all">
-            Upgrade
-          </button>
-        </div>
+        <p className="text-xs text-slate-500 text-center">Powered by Gemini AI</p>
       </div>
     </aside>
   )

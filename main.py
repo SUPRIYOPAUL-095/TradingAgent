@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import yfinance as yf
 from stockstats import StockDataFrame
 from tradingagents.dataflows.config import get_config
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage
 import os
 
@@ -24,11 +24,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize LLM client
-llm = ChatOpenAI(
-    api_key=os.getenv("OPENAI_API_KEY"),
-    base_url="https://api.groq.com/openai/v1",
-    model="llama-3.1-8b-instant"
+# Initialize Gemini LLM client
+llm = ChatGoogleGenerativeAI(
+    model="gemini-1.5-flash",
+    google_api_key=os.getenv("GOOGLE_API_KEY")
 )
 
 @app.get("/")
