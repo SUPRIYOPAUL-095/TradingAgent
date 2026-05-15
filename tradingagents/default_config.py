@@ -10,7 +10,7 @@ DEFAULT_CONFIG = {
     # LLM settings
     "llm_provider": "google",
     "deep_think_llm": "gemini-1.5-pro",
-    "quick_think_llm": "gemini-1.5-flash-latest",
+    "quick_think_llm": "gemini-2.0-flash",
     "backend_url": None,
     # Provider-specific thinking configuration
     "google_thinking_level": None,      # "high", "minimal", etc.
