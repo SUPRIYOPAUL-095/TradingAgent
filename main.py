@@ -91,7 +91,13 @@ def analyze(symbol: str, date: str = None):
         response = llm.invoke([HumanMessage(content=prompt)])
         summary = response.content
     except Exception as e:
-        summary = f"AI Analysis currently unavailable: {str(e)}"
+        error_msg = str(e).lower()
+        if "429" in error_msg or "resource_exhausted" in error_msg or "quota" in error_msg:
+            summary = "AI analysis temporarily unavailable due to API quota limits. Please try again later."
+        elif "timeout" in error_msg:
+            summary = "AI analysis temporarily unavailable due to timeout. Please try again later."
+        else:
+            summary = "AI analysis temporarily unavailable. Please try again later."
     
     return {
         "symbol": symbol,
