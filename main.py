@@ -26,7 +26,7 @@ app.add_middleware(
 
 # Initialize Gemini LLM client
 llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
+    model="gemini-1.5-flash-latest",
     google_api_key=os.getenv("GOOGLE_API_KEY")
 )
 
