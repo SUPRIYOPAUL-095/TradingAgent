@@ -100,7 +100,7 @@ export default function AnalysisForm({ onSubmit, loading }: AnalysisFormProps) {
             <span className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
               <Zap size={18} />
             </span>
-            <span>AI Analytical Agent Engine</span>
+            <span>Market Intelligence Engine</span>
           </h2>
           <p className="text-xs text-slate-400 mt-1">
             Initiate real-time technical computation combined with Google Gemini market synthesis
@@ -202,7 +202,7 @@ export default function AnalysisForm({ onSubmit, loading }: AnalysisFormProps) {
               ) : (
                 <>
                   <Zap size={15} className="fill-current text-white animate-pulse" />
-                  <span>Execute Analysis</span>
+                  <span>Generate Analysis</span>
                 </>
               )}
             </motion.button>

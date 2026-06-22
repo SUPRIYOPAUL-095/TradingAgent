@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react'
 import { Search, Bell, Sun, Menu, Globe, ChevronDown } from 'lucide-react'
 
 interface HeaderProps {
-  onMenuClick: () => void
-  isSidebarCollapsed: boolean
-  onToggleSidebar: () => void
+  onMenuClick?: () => void
+  isSidebarCollapsed?: boolean
+  onToggleSidebar?: () => void
 }
 
-export default function Header({ onMenuClick, isSidebarCollapsed, onToggleSidebar }: HeaderProps) {
+export default function Header({ onMenuClick = () => {}, isSidebarCollapsed = false, onToggleSidebar = () => {} }: HeaderProps) {
   const [timeStr, setTimeStr] = useState('')
   const [isMarketOpen, setIsMarketOpen] = useState(false)
 
@@ -62,10 +62,8 @@ export default function Header({ onMenuClick, isSidebarCollapsed, onToggleSideba
 
         <div className="hidden lg:flex items-center gap-3">
           <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            <span>Gemini AI</span>
-            <span className="text-xs px-2 py-0.5 rounded-full font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              Terminal v1.2
-            </span>
+            <span>ARTHNEETI</span>
+            <span className="text-xs px-2 py-0.5 rounded-full font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">Arthneeti Terminal</span>
           </h1>
         </div>
       </div>
@@ -118,7 +116,7 @@ export default function Header({ onMenuClick, isSidebarCollapsed, onToggleSideba
             TR
           </div>
           <div className="hidden xl:block text-left">
-            <div className="text-xs font-medium text-white">Trader Portfolio</div>
+            <div className="text-xs font-medium text-white">Analyst Workspace</div>
             <div className="text-[10px] text-slate-500">Recruiter Access</div>
           </div>
         </div>

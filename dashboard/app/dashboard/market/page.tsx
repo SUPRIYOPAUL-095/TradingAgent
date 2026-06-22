@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   LineChart,
   Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -13,8 +15,7 @@ import {
   Pie,
   Cell,
 } from 'recharts'
-import { TrendingUp, TrendingDown, Activity, PieChart as PieChartIcon, BellRing, Target, Info } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { TrendingUp, TrendingDown, Activity, PieChart as PieChartIcon } from 'lucide-react'
 
 interface StockData {
   symbol: string
@@ -41,8 +42,9 @@ interface SectorData {
 
 export default function MarketPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'gainers' | 'losers' | 'sectors'>('overview')
+  const [loading, setLoading] = useState(false)
 
-  // Market indices
+  // Mock market indices data
   const marketIndices: MarketIndice[] = [
     {
       symbol: 'NIFTY 50',
@@ -74,7 +76,7 @@ export default function MarketPage() {
     },
   ]
 
-  // Top gainers
+  // Mock top gainers
   const topGainers: StockData[] = [
     {
       symbol: 'RELIANCE',
@@ -118,7 +120,7 @@ export default function MarketPage() {
     },
   ]
 
-  // Top losers
+  // Mock top losers
   const topLosers: StockData[] = [
     {
       symbol: 'BAJAJFINSV',
@@ -154,7 +156,7 @@ export default function MarketPage() {
     },
   ]
 
-  // Sector distribution
+  // Mock sector data
   const sectorData: SectorData[] = [
     { name: 'IT', value: 28, stocks: ['TCS', 'INFY', 'WIPRO', 'HCLTECH'] },
     { name: 'Finance', value: 22, stocks: ['HDFC', 'ICICIBANK', 'AXISBANK', 'SBIN'] },
@@ -174,310 +176,298 @@ export default function MarketPage() {
     { time: '14:00', nifty: 24590, sensex: 81245 },
   ]
 
-  const sectorColors = ['#06b6d4', '#10b981', '#a855f7', '#f43f5e', '#eab308', '#64748b']
+  const sectorColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#6b7280']
 
   return (
-    <div className="space-y-6 lg:space-y-8">
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight text-white">Market Analysis</h2>
-        <p className="text-xs text-slate-400">Real-time index feeds, sector mapping, and top momentum indicators</p>
-      </div>
-
-      {/* Market Indices overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {marketIndices.map((indice, idx) => {
-          const isIndiceUp = indice.changePercent > 0
-          return (
-            <motion.div
-              whileHover={{ y: -2 }}
-              key={idx}
-              className={`glass-panel rounded-xl p-5 border border-slate-900 transition-all duration-300 flex flex-col justify-between h-32
-                ${isIndiceUp ? 'glass-glow-emerald bg-emerald-500/5' : 'glass-glow-rose bg-rose-500/5'}
-              `}
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{indice.symbol}</p>
-                  <p className="text-md font-mono font-bold text-white mt-1">₹{indice.value.toLocaleString('en-IN')}</p>
-                </div>
-                <div className={`w-7 h-7 rounded-lg flex items-center justify-center bg-slate-950 border border-slate-900`}>
-                  {isIndiceUp ? (
-                    <TrendingUp className="text-emerald-400" size={14} />
-                  ) : (
-                    <TrendingDown className="text-rose-400" size={14} />
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5 text-[11px] font-mono mt-2">
-                <span className={isIndiceUp ? 'text-emerald-400' : 'text-rose-400'}>
-                  {isIndiceUp ? '+' : ''}{indice.change.toFixed(2)}
-                </span>
-                <span className={isIndiceUp ? 'text-emerald-400/80' : 'text-rose-400/80'}>
-                  ({isIndiceUp ? '+' : ''}{indice.changePercent.toFixed(2)}%)
-                </span>
-              </div>
-            </motion.div>
-          )
-        })}
-      </div>
-
-      {/* Market trend chart */}
-      <div className="glass-panel rounded-2xl p-6 border border-slate-900 shadow-xl space-y-4">
-        <h3 className="text-md font-bold text-white flex items-center gap-2">
-          <Activity size={16} className="text-blue-400" />
-          <span>Intraday Index Convergence</span>
-        </h3>
-        
-        <div className="h-80 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={marketTrendData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.3} vertical={false} />
-              <XAxis dataKey="time" stroke="#475569" style={{ fontSize: '11px', fontFamily: 'monospace' }} />
-              <YAxis stroke="#475569" style={{ fontSize: '11px', fontFamily: 'monospace' }} domain={['auto', 'auto']} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: '#030712',
-                  border: '1px solid #1e293b',
-                  borderRadius: '10px',
-                  color: '#fff',
-                  fontSize: '12px'
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="nifty"
-                stroke="#3b82f6"
-                strokeWidth={2}
-                dot={false}
-                name="NIFTY 50"
-              />
-              <Line
-                type="monotone"
-                dataKey="sensex"
-                stroke="#10b981"
-                strokeWidth={2}
-                dot={false}
-                name="SENSEX"
-              />
-            </LineChart>
-          </ResponsiveContainer>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-white mb-2">Market Analysis</h1>
+          <p className="text-slate-400">Real-time market insights and sector performance</p>
         </div>
-      </div>
 
-      {/* Tab controls */}
-      <div className="glass-panel rounded-2xl border border-slate-900 shadow-xl overflow-hidden">
-        {/* Navigation bar */}
-        <div className="flex border-b border-slate-900 overflow-x-auto bg-slate-950/40">
-          {[
-            { id: 'overview', label: 'Overview', icon: Activity },
-            { id: 'gainers', label: 'Top Gainers', icon: TrendingUp },
-            { id: 'losers', label: 'Top Losers', icon: TrendingDown },
-            { id: 'sectors', label: 'Sector Analysis', icon: PieChartIcon },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`px-6 py-4 font-semibold text-xs uppercase tracking-wider transition-all whitespace-nowrap flex items-center gap-2 border-b-2
-                ${activeTab === tab.id
-                  ? 'text-blue-400 border-blue-500 bg-slate-950/60'
-                  : 'text-slate-400 border-transparent hover:text-slate-300'
-                }`}
+        {/* Market Indices Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {marketIndices.map((indice, idx) => (
+            <div
+              key={idx}
+              className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700 hover:border-slate-600 transition-all"
             >
-              <tab.icon size={14} />
-              <span>{tab.label}</span>
-            </button>
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <p className="text-slate-400 text-sm mb-1">{indice.symbol}</p>
+                  <p className="text-white font-bold text-lg">{indice.value.toFixed(2)}</p>
+                </div>
+                {indice.changePercent > 0 ? (
+                  <TrendingUp className="text-green-400" size={24} />
+                ) : (
+                  <TrendingDown className="text-red-400" size={24} />
+                )}
+              </div>
+              <div className="flex gap-2">
+                <span
+                  className={`text-xm font-semibold ${
+                    indice.changePercent > 0 ? 'text-green-400' : 'text-red-400'
+                  }`}
+                >
+                  {indice.changePercent > 0 ? '+' : ''}
+                  {indice.change.toFixed(2)}
+                </span>
+                <span
+                  className={`text-xs ${
+                    indice.changePercent > 0 ? 'text-green-400' : 'text-red-400'
+                  }`}
+                >
+                  ({indice.changePercent > 0 ? '+' : ''}
+                  {indice.changePercent.toFixed(2)}%)
+                </span>
+              </div>
+            </div>
           ))}
         </div>
 
-        {/* Tab display */}
-        <div className="p-6">
-          
-          {/* 1. Overview */}
-          {activeTab === 'overview' && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Left stats */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                  <span className="w-1.5 h-3 bg-blue-500 rounded" />
-                  <span>Market Statistics</span>
-                </h4>
-                
-                <div className="space-y-1.5">
-                  {[
-                    { label: 'Total Volume', value: '8.45B', highlight: 'text-white' },
-                    { label: 'Advances', value: '1,245 (62%)', highlight: 'text-emerald-400' },
-                    { label: 'Declines', value: '650 (33%)', highlight: 'text-rose-400' },
-                    { label: 'Unchanged', value: '95 (5%)', highlight: 'text-slate-400' },
-                    { label: 'Market Cap (INR)', value: '₹385 Trillion', highlight: 'text-cyan-400' },
-                  ].map((stat, sIdx) => (
-                    <div key={sIdx} className="flex justify-between items-center py-2.5 border-b border-slate-900 last:border-0 text-xs">
-                      <span className="text-slate-400 font-medium">{stat.label}</span>
-                      <span className={`font-mono font-bold ${stat.highlight}`}>{stat.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+        {/* Market Trend Chart */}
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 border border-slate-700 mb-8">
+          <h2 className="text-xl font-bold text-white mb-6">Market Trend (Today)</h2>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={marketTrendData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.2} />
+                <XAxis dataKey="time" stroke="#9ca3af" />
+                <YAxis stroke="#9ca3af" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#1e293b',
+                    border: '1px solid #475569',
+                    borderRadius: '8px',
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="nifty"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  name="NIFTY 50"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="sensex"
+                  stroke="#10b981"
+                  strokeWidth={2}
+                  name="SENSEX"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
-              {/* Right pie */}
-              <div>
-                <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-                  <span className="w-1.5 h-3 bg-purple-500 rounded" />
-                  <span>Sector Allocation</span>
-                </h4>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={sectorData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, value }) => `${name} (${value}%)`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {sectorData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={sectorColors[index % sectorColors.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-          )}
+        {/* Market Data Tabs */}
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700 overflow-hidden">
+          {/* Tab Navigation */}
+          <div className="flex border-b border-slate-700 overflow-x-auto">
+            {[
+              { id: 'overview', label: 'Overview', icon: Activity },
+              { id: 'gainers', label: 'Top Gainers', icon: TrendingUp },
+              { id: 'losers', label: 'Top Losers', icon: TrendingDown },
+              { id: 'sectors', label: 'Sector Analysis', icon: PieChartIcon },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`px-6 py-4 font-medium transition-all whitespace-nowrap flex items-center gap-2 ${
+                  activeTab === tab.id
+                    ? 'text-blue-400 border-b-2 border-blue-400'
+                    : 'text-slate-400 hover:text-slate-300'
+                }`}
+              >
+                <tab.icon size={18} />
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-          {/* 2. Top Gainers */}
-          {activeTab === 'gainers' && (
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b border-slate-900 text-slate-500 font-bold uppercase tracking-wider">
-                    <th className="text-left py-3.5 px-4">Symbol</th>
-                    <th className="text-left py-3.5 px-4">Company</th>
-                    <th className="text-right py-3.5 px-4">Price</th>
-                    <th className="text-right py-3.5 px-4">Change</th>
-                    <th className="text-right py-3.5 px-4">Change %</th>
-                    <th className="text-right py-3.5 px-4">Volume</th>
-                  </tr>
-                </thead>
-                <tbody className="font-medium text-slate-300">
-                  {topGainers.map((stock, idx) => (
-                    <tr
-                      key={idx}
-                      className="border-b border-slate-900 hover:bg-slate-900/30 transition-colors"
-                    >
-                      <td className="py-3 px-4 font-mono font-bold text-white">{stock.symbol}</td>
-                      <td className="py-3 px-4 text-slate-400">{stock.name}</td>
-                      <td className="py-3 px-4 text-right font-mono font-semibold text-white">₹{stock.price.toFixed(2)}</td>
-                      <td className="py-3 px-4 text-right font-mono font-semibold text-emerald-400">
-                        +₹{stock.change.toFixed(2)}
-                      </td>
-                      <td className="py-3 px-4 text-right font-mono font-bold text-emerald-400">
-                        +{stock.changePercent.toFixed(2)}%
-                      </td>
-                      <td className="py-3 px-4 text-right font-mono text-slate-500">
-                        {(stock.volume / 1000000).toFixed(2)}M
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* 3. Top Losers */}
-          {activeTab === 'losers' && (
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b border-slate-900 text-slate-500 font-bold uppercase tracking-wider">
-                    <th className="text-left py-3.5 px-4">Symbol</th>
-                    <th className="text-left py-3.5 px-4">Company</th>
-                    <th className="text-right py-3.5 px-4">Price</th>
-                    <th className="text-right py-3.5 px-4">Change</th>
-                    <th className="text-right py-3.5 px-4">Change %</th>
-                    <th className="text-right py-3.5 px-4">Volume</th>
-                  </tr>
-                </thead>
-                <tbody className="font-medium text-slate-300">
-                  {topLosers.map((stock, idx) => (
-                    <tr
-                      key={idx}
-                      className="border-b border-slate-900 hover:bg-slate-900/30 transition-colors"
-                    >
-                      <td className="py-3 px-4 font-mono font-bold text-white">{stock.symbol}</td>
-                      <td className="py-3 px-4 text-slate-400">{stock.name}</td>
-                      <td className="py-3 px-4 text-right font-mono font-semibold text-white">₹{stock.price.toFixed(2)}</td>
-                      <td className="py-3 px-4 text-right font-mono font-semibold text-rose-400">
-                        -₹{Math.abs(stock.change).toFixed(2)}
-                      </td>
-                      <td className="py-3 px-4 text-right font-mono font-bold text-rose-400">
-                        {stock.changePercent.toFixed(2)}%
-                      </td>
-                      <td className="py-3 px-4 text-right font-mono text-slate-500">
-                        {(stock.volume / 1000000).toFixed(2)}M
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* 4. Sectors */}
-          {activeTab === 'sectors' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {sectorData.map((sector, idx) => (
-                <div
-                  key={idx}
-                  className="bg-slate-950/40 rounded-xl p-5 border border-slate-900 hover:border-slate-800 transition-colors duration-200"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wide">{sector.name} Weightage</h4>
-                    <div
-                      className="text-[10px] font-bold px-2 py-1 rounded text-white"
-                      style={{ backgroundColor: sectorColors[idx % sectorColors.length] }}
-                    >
-                      {sector.value}%
-                    </div>
+          {/* Tab Content */}
+          <div className="p-6">
+            {/* Overview */}
+            {activeTab === 'overview' && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Market Stats */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-bold text-white mb-4">Market Statistics</h3>
+                  <div className="flex justify-between py-3 border-b border-slate-700">
+                    <span className="text-slate-400">Total Volume</span>
+                    <span className="text-white font-semibold">8.45B</span>
                   </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {sector.stocks.map((stock, sidx) => (
-                      <span
-                        key={sidx}
-                        className="px-2.5 py-1 bg-slate-900/60 border border-slate-800/40 rounded-md text-[10px] text-slate-400 hover:text-slate-200 hover:bg-slate-900 transition-all font-mono"
+                  <div className="flex justify-between py-3 border-b border-slate-700">
+                    <span className="text-slate-400">Advances</span>
+                    <span className="text-green-400 font-semibold">1,245 (62%)</span>
+                  </div>
+                  <div className="flex justify-between py-3 border-b border-slate-700">
+                    <span className="text-slate-400">Declines</span>
+                    <span className="text-red-400 font-semibold">650 (33%)</span>
+                  </div>
+                  <div className="flex justify-between py-3 border-b border-slate-700">
+                    <span className="text-slate-400">Unchanged</span>
+                    <span className="text-slate-400 font-semibold">95 (5%)</span>
+                  </div>
+                  <div className="flex justify-between py-3">
+                    <span className="text-slate-400">Market Cap (INR)</span>
+                    <span className="text-blue-400 font-semibold">₹385 Trillion</span>
+                  </div>
+                </div>
+
+                {/* Sector Distribution */}
+                <div>
+                  <h3 className="text-lg font-bold text-white mb-4">Sector Distribution</h3>
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={sectorData}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, value }) => `${name} ${value}%`}
+                          outerRadius={100}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {sectorData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={sectorColors[index % sectorColors.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Top Gainers Table */}
+            {activeTab === 'gainers' && (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-700">
+                      <th className="text-left py-3 px-4 text-slate-400 font-medium">Symbol</th>
+                      <th className="text-left py-3 px-4 text-slate-400 font-medium">Company</th>
+                      <th className="text-right py-3 px-4 text-slate-400 font-medium">Price</th>
+                      <th className="text-right py-3 px-4 text-slate-400 font-medium">Change</th>
+                      <th className="text-right py-3 px-4 text-slate-400 font-medium">Change %</th>
+                      <th className="text-right py-3 px-4 text-slate-400 font-medium">Volume</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topGainers.map((stock, idx) => (
+                      <tr
+                        key={idx}
+                        className="border-b border-slate-700 hover:bg-slate-700/20 transition-colors"
                       >
-                        {stock}
-                      </span>
+                        <td className="py-3 px-4 font-semibold text-white">{stock.symbol}</td>
+                        <td className="py-3 px-4 text-slate-300">{stock.name}</td>
+                        <td className="py-3 px-4 text-right text-white">₹{stock.price.toFixed(2)}</td>
+                        <td className="py-3 px-4 text-right text-green-400 font-semibold">
+                          +₹{stock.change.toFixed(2)}
+                        </td>
+                        <td className="py-3 px-4 text-right text-green-400 font-semibold">
+                          +{stock.changePercent.toFixed(2)}%
+                        </td>
+                        <td className="py-3 px-4 text-right text-slate-400">
+                          {(stock.volume / 1000000).toFixed(2)}M
+                        </td>
+                      </tr>
                     ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* Top Losers Table */}
+            {activeTab === 'losers' && (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-700">
+                      <th className="text-left py-3 px-4 text-slate-400 font-medium">Symbol</th>
+                      <th className="text-left py-3 px-4 text-slate-400 font-medium">Company</th>
+                      <th className="text-right py-3 px-4 text-slate-400 font-medium">Price</th>
+                      <th className="text-right py-3 px-4 text-slate-400 font-medium">Change</th>
+                      <th className="text-right py-3 px-4 text-slate-400 font-medium">Change %</th>
+                      <th className="text-right py-3 px-4 text-slate-400 font-medium">Volume</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topLosers.map((stock, idx) => (
+                      <tr
+                        key={idx}
+                        className="border-b border-slate-700 hover:bg-slate-700/20 transition-colors"
+                      >
+                        <td className="py-3 px-4 font-semibold text-white">{stock.symbol}</td>
+                        <td className="py-3 px-4 text-slate-300">{stock.name}</td>
+                        <td className="py-3 px-4 text-right text-white">₹{stock.price.toFixed(2)}</td>
+                        <td className="py-3 px-4 text-right text-red-400 font-semibold">
+                          -₹{Math.abs(stock.change).toFixed(2)}
+                        </td>
+                        <td className="py-3 px-4 text-right text-red-400 font-semibold">
+                          {stock.changePercent.toFixed(2)}%
+                        </td>
+                        <td className="py-3 px-4 text-right text-slate-400">
+                          {(stock.volume / 1000000).toFixed(2)}M
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* Sector Analysis */}
+            {activeTab === 'sectors' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {sectorData.map((sector, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-slate-700/20 rounded-lg p-6 border border-slate-600"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-bold text-white">{sector.name}</h3>
+                      <div
+                        className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold"
+                        style={{ backgroundColor: sectorColors[idx] }}
+                      >
+                        {sector.value}%
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {sector.stocks.map((stock, sidx) => (
+                        <span
+                          key={sidx}
+                          className="px-3 py-1 bg-slate-700/50 rounded-full text-xs text-slate-300 hover:bg-slate-700 transition-colors cursor-pointer"
+                        >
+                          {stock}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* System Notifications Box */}
-      <div className="glass-panel bg-gradient-to-r from-blue-500/5 to-cyan-500/5 border border-slate-900 rounded-2xl p-5 flex items-start gap-4">
-        <div className="w-9 h-9 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center flex-shrink-0 animate-bounce">
-          <BellRing size={16} />
-        </div>
-        <div className="space-y-1">
-          <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Market Intelligence Bulletin</h4>
-          <ul className="list-disc list-inside text-[11px] text-slate-400 space-y-1 leading-relaxed">
-            <li>NIFTY 50 consolidated near key resistance levels - Momentum bias: Bullish</li>
-            <li>Energy and IT weightages showing robust structural inflows</li>
-            <li>FII / DII net institutional inflow: Positive daily convergence</li>
+        {/* Market Alerts */}
+        <div className="mt-8 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-2xl p-6">
+          <h3 className="text-lg font-bold text-white mb-4">Market Alerts</h3>
+          <ul className="space-y-2 text-slate-300">
+            <li>✓ NIFTY 50 crossed 24,500 level - Strong bullish momentum</li>
+            <li>✓ IT sector showing strength with 3.2% gains</li>
+            <li>⚠ Banking sector experiencing profit booking</li>
+            <li>ℹ FII inflow: ₹2,450 Cr (today)</li>
           </ul>
         </div>
       </div>
-
     </div>
   )
 }

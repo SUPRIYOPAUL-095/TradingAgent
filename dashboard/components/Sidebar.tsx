@@ -71,8 +71,7 @@ export default function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed
               <Zap className="text-white" size={18} />
             </div>
             <div className={`transition-all duration-300 ${isCollapsed ? 'lg:opacity-0 lg:w-0' : 'opacity-100 w-auto'}`}>
-              <span className="font-bold text-white tracking-wide text-sm">QUANTUM</span>
-              <span className="text-[10px] text-cyan-400 font-semibold block -mt-1 tracking-widest">TRADING</span>
+              <span className="font-bold text-white tracking-wide text-sm">ARTHNEETI</span>
             </div>
           </div>
 
@@ -140,7 +139,7 @@ export default function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed
 
           <div className="py-2 text-center overflow-hidden">
             <span className={`text-[10px] text-slate-600 block transition-all duration-300 ${isCollapsed ? 'lg:opacity-0' : 'opacity-100'}`}>
-              © 2026 QUANTUM AI
+              © 2026 ARTHNEETI AI
             </span>
           </div>
         </div>
