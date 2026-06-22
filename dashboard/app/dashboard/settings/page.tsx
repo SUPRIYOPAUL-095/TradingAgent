@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Settings, Save, RotateCcw, Zap, Shield, Bell } from 'lucide-react'
+import { Settings, Save, RotateCcw, Zap, Shield, Bell, Check } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 interface Config {
   analysisEnabled: boolean
@@ -33,122 +34,143 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-white flex items-center gap-3 mb-2">
-              <Settings size={32} /> Settings
-            </h1>
-            <p className="text-slate-400">Configure your Gemini AI trading parameters</p>
-          </div>
-          {saved && (
-            <div className="bg-green-500/10 border border-green-500/30 rounded-lg px-4 py-2 text-green-400 text-sm">
-              ✓ Settings saved successfully
-            </div>
-          )}
+    <div className="max-w-4xl mx-auto space-y-6 lg:space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
+            <Settings size={24} />
+            <span>Terminal Configurations</span>
+          </h2>
+          <p className="text-xs text-slate-400">Manage Gemini AI API parameters and backtest thresholds</p>
         </div>
 
-        {/* AI Configuration */}
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 border border-slate-700 space-y-6">
-          <div className="flex items-center gap-3 mb-6">
-            <Zap className="text-blue-400" size={24} />
-            <h2 className="text-2xl font-bold text-white">AI Configuration</h2>
+        {saved && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-2 text-emerald-400 text-xs font-semibold flex items-center gap-1.5 shadow-lg"
+          >
+            <Check size={14} />
+            <span>Settings saved successfully</span>
+          </motion.div>
+        )}
+      </div>
+
+      {/* 1. AI Configuration */}
+      <div className="glass-panel rounded-2xl p-6 lg:p-8 border border-slate-900/60 shadow-xl space-y-6">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
+            <Zap size={16} />
+          </div>
+          <h3 className="text-md font-bold text-white">AI Engine Parameters</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          {/* Active Model */}
+          <div className="p-5 bg-slate-950/40 border border-slate-900 rounded-xl flex flex-col justify-between">
+            <div>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Active Synthesis Engine</p>
+              <h4 className="text-md font-bold text-white mt-1">Google Gemini 1.5 Flash</h4>
+            </div>
+            <p className="text-[11px] text-slate-400 mt-4 leading-relaxed">
+              Optimized for real-time computational parsing, index evaluations, and automated summaries.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Model Info */}
-            <div className="p-4 bg-slate-700/50 border border-slate-600 rounded-lg">
-              <p className="text-sm font-medium text-slate-300 mb-1">Active Model</p>
-              <p className="text-lg font-bold text-white">Google Gemini 1.5 Flash</p>
-              <p className="text-xs text-slate-400 mt-2">Optimized for fast, accurate technical analysis</p>
-            </div>
-
-            {/* Risk Level */}
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-3">
-                Risk Tolerance
-              </label>
-              <div className="flex gap-2">
-                {(['conservative', 'moderate', 'aggressive'] as const).map(level => (
+          {/* Risk Level */}
+          <div className="space-y-3">
+            <label className="block text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+              Risk Tolerance Threshold
+            </label>
+            <div className="flex gap-2">
+              {(['conservative', 'moderate', 'aggressive'] as const).map(level => {
+                const isActive = config.riskLevel === level
+                return (
                   <button
                     key={level}
                     onClick={() => setConfig({ ...config, riskLevel: level })}
-                    className={`px-4 py-2 rounded-lg transition text-sm font-medium ${
-                      config.riskLevel === level
+                    className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border flex-1
+                      ${isActive
                         ? level === 'conservative'
-                          ? 'bg-green-500 text-white'
+                          ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400 shadow-lg shadow-emerald-500/5'
                           : level === 'moderate'
-                          ? 'bg-yellow-500 text-white'
-                          : 'bg-red-500 text-white'
-                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                    }`}
+                          ? 'bg-amber-500/15 border-amber-500/30 text-amber-400 shadow-lg shadow-amber-500/5'
+                          : 'bg-rose-500/15 border-rose-500/30 text-rose-400 shadow-lg shadow-rose-500/5'
+                        : 'bg-slate-950 border-slate-900 text-slate-400 hover:text-slate-200'
+                      }`}
                   >
-                    {level.charAt(0).toUpperCase() + level.slice(1)}
+                    {level}
                   </button>
-                ))}
-              </div>
-              <p className="text-xs text-slate-400 mt-2">
-                Affects recommendation strength and confidence thresholds
-              </p>
+                )
+              })}
             </div>
+            <p className="text-[11px] text-slate-500">
+              Modulates recommendation strength scores, indicator crossovers, and targets limits.
+            </p>
           </div>
         </div>
+      </div>
 
-        {/* Preferences */}
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 border border-slate-700 space-y-6">
-          <div className="flex items-center gap-3 mb-6">
-            <Shield className="text-purple-400" size={24} />
-            <h2 className="text-2xl font-bold text-white">Preferences</h2>
+      {/* 2. Preferences */}
+      <div className="glass-panel rounded-2xl p-6 lg:p-8 border border-slate-900/60 shadow-xl space-y-6">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
+            <Shield size={16} />
           </div>
-
-          <div className="space-y-4">
-            <label className="flex items-center justify-between p-4 bg-slate-700/50 border border-slate-600 rounded-lg hover:bg-slate-700/70 transition cursor-pointer">
-              <div>
-                <p className="font-medium text-white">Enable Analysis Engine</p>
-                <p className="text-xs text-slate-400">Allow AI to process stock data</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={config.analysisEnabled}
-                onChange={e => setConfig({ ...config, analysisEnabled: e.target.checked })}
-                className="w-4 h-4 rounded bg-slate-600 border-slate-500 text-blue-600 focus:ring-blue-500"
-              />
-            </label>
-
-            <label className="flex items-center justify-between p-4 bg-slate-700/50 border border-slate-600 rounded-lg hover:bg-slate-700/70 transition cursor-pointer">
-              <div>
-                <p className="font-medium text-white flex items-center gap-2">
-                  <Bell size={16} /> Notifications
-                </p>
-                <p className="text-xs text-slate-400">Get alerts when analysis is complete</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={config.notificationsEnabled}
-                onChange={e => setConfig({ ...config, notificationsEnabled: e.target.checked })}
-                className="w-4 h-4 rounded bg-slate-600 border-slate-500 text-blue-600 focus:ring-blue-500"
-              />
-            </label>
-          </div>
+          <h3 className="text-md font-bold text-white">Engine Preferences</h3>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-4 justify-end">
-          <button
-            onClick={handleReset}
-            className="px-6 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition font-medium flex items-center gap-2"
-          >
-            <RotateCcw size={18} /> Reset
-          </button>
-          <button
-            onClick={handleSave}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium flex items-center gap-2"
-          >
-            <Save size={18} /> Save Changes
-          </button>
+        <div className="space-y-4 pt-2">
+          {/* Analysis Switch */}
+          <label className="flex items-center justify-between p-4 bg-slate-950/40 border border-slate-900 rounded-xl hover:border-slate-800 transition cursor-pointer">
+            <div className="space-y-0.5">
+              <p className="text-xs font-bold text-white">Enable Real-Time Computation</p>
+              <p className="text-[10px] text-slate-400">Trigger computations on RSI, SMA20, and SMA50 intervals on fetch.</p>
+            </div>
+            <input
+              type="checkbox"
+              checked={config.analysisEnabled}
+              onChange={e => setConfig({ ...config, analysisEnabled: e.target.checked })}
+              className="w-4 h-4 rounded bg-slate-950 border-slate-900 text-blue-500 focus:ring-blue-500 focus:ring-offset-slate-950 focus:ring-offset-2"
+            />
+          </label>
+
+          {/* Notifications Switch */}
+          <label className="flex items-center justify-between p-4 bg-slate-950/40 border border-slate-900 rounded-xl hover:border-slate-800 transition cursor-pointer">
+            <div className="space-y-0.5">
+              <p className="text-xs font-bold text-white flex items-center gap-1.5">
+                <Bell size={13} className="text-slate-400" />
+                <span>Diagnostic Notifications</span>
+              </p>
+              <p className="text-[10px] text-slate-400">Alert client interface when AI backtest logs compile successfully.</p>
+            </div>
+            <input
+              type="checkbox"
+              checked={config.notificationsEnabled}
+              onChange={e => setConfig({ ...config, notificationsEnabled: e.target.checked })}
+              className="w-4 h-4 rounded bg-slate-950 border-slate-900 text-blue-500 focus:ring-blue-500 focus:ring-offset-slate-950 focus:ring-offset-2"
+            />
+          </label>
         </div>
+      </div>
+
+      {/* Save / Reset triggers */}
+      <div className="flex gap-3 justify-end">
+        <button
+          onClick={handleReset}
+          className="px-5 py-3 bg-slate-950 border border-slate-900 hover:border-slate-800 text-slate-300 hover:text-white rounded-xl text-xs font-semibold uppercase tracking-wider transition flex items-center gap-1.5"
+        >
+          <RotateCcw size={14} />
+          <span>Reset Defaults</span>
+        </button>
+        <button
+          onClick={handleSave}
+          className="px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-semibold uppercase tracking-wider transition flex items-center gap-1.5 shadow-lg border border-blue-500/10"
+        >
+          <Save size={14} />
+          <span>Save Changes</span>
+        </button>
       </div>
     </div>
   )
