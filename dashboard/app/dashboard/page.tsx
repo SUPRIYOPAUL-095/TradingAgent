@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Header, AnalysisForm, DashboardCards, ChartSection } from '@/components'
+import { isErrorSummary, generateLocalSummary, formatNumber } from '@/lib/utils'
 import {
   Zap,
   TrendingUp,
@@ -17,6 +18,8 @@ interface AnalysisResult {
   rsi: number
   sma20: number
   sma50: number
+  latestPrice: number
+  summarySource: 'gemini' | 'local'
   history: Array<{ date: string; price: number }>
 }
 
@@ -47,16 +50,36 @@ export default function DashboardPage() {
         throw new Error(data.error)
       }
 
+      const signal = (data.signal as 'BUY' | 'SELL' | 'HOLD') || 'HOLD'
+
+      // Frontend defense: detect error messages in the summary and replace with local analysis
+      let explanation = data.summary || ''
+      let summarySource: 'gemini' | 'local' = data.summary_source || 'gemini'
+
+      if (isErrorSummary(explanation)) {
+        explanation = generateLocalSummary({
+          symbol: data.symbol || company,
+          rsi: data.rsi,
+          sma20: data.sma20,
+          sma50: data.sma50,
+          signal: signal,
+          latestPrice: data.latest_price,
+        })
+        summarySource = 'local'
+      }
+
       const analysisResult: AnalysisResult = {
         company_symbol: data.symbol || company,
         analysis_date: data.date || date,
-        decision: (data.signal as 'BUY' | 'SELL' | 'HOLD') || 'HOLD',
+        decision: signal,
         confidence: data.rsi ? (data.rsi > 70 || data.rsi < 30 ? 85 : 65) : 75,
         risk: data.rsi ? (data.rsi > 80 || data.rsi < 20 ? 'High' : 'Medium') : 'Medium',
-        explanation: data.summary || 'No detailed analysis summary provided.',
+        explanation: explanation,
         rsi: data.rsi,
         sma20: data.sma20,
         sma50: data.sma50,
+        latestPrice: data.latest_price || 0,
+        summarySource: summarySource,
         history: data.history || []
       }
 
@@ -108,6 +131,9 @@ export default function DashboardPage() {
               rsi={result.rsi}
               sma20={result.sma20}
               sma50={result.sma50}
+              companySymbol={result.company_symbol}
+              latestPrice={result.latestPrice}
+              summarySource={result.summarySource}
             />
 
             <ChartSection data={result.history} />
@@ -123,11 +149,11 @@ export default function DashboardPage() {
               </div>
               <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
                 <p className="text-slate-400 text-sm mb-2">SMA (20)</p>
-                <p className="text-2xl font-bold text-cyan-400">{result.sma20}</p>
+                <p className="text-2xl font-bold text-cyan-400">{formatNumber(result.sma20)}</p>
               </div>
               <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
                 <p className="text-slate-400 text-sm mb-2">SMA (50)</p>
-                <p className="text-2xl font-bold text-indigo-400">{result.sma50}</p>
+                <p className="text-2xl font-bold text-indigo-400">{formatNumber(result.sma50)}</p>
               </div>
             </div>
           </div>

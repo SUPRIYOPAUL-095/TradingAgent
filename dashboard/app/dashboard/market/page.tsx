@@ -16,6 +16,7 @@ import {
   Cell,
 } from 'recharts'
 import { TrendingUp, TrendingDown, Activity, PieChart as PieChartIcon } from 'lucide-react'
+import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils'
 
 interface StockData {
   symbol: string
@@ -197,7 +198,7 @@ export default function MarketPage() {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <p className="text-slate-400 text-sm mb-1">{indice.symbol}</p>
-                  <p className="text-white font-bold text-lg">{indice.value.toFixed(2)}</p>
+                  <p className="text-white font-bold text-lg">{formatNumber(indice.value)}</p>
                 </div>
                 {indice.changePercent > 0 ? (
                   <TrendingUp className="text-green-400" size={24} />
@@ -212,15 +213,14 @@ export default function MarketPage() {
                   }`}
                 >
                   {indice.changePercent > 0 ? '+' : ''}
-                  {indice.change.toFixed(2)}
+                  {formatNumber(indice.change)}
                 </span>
                 <span
                   className={`text-xs ${
                     indice.changePercent > 0 ? 'text-green-400' : 'text-red-400'
                   }`}
                 >
-                  ({indice.changePercent > 0 ? '+' : ''}
-                  {indice.changePercent.toFixed(2)}%)
+                  ({formatPercentage(indice.changePercent)})
                 </span>
               </div>
             </div>
@@ -367,15 +367,15 @@ export default function MarketPage() {
                       >
                         <td className="py-3 px-4 font-semibold text-white">{stock.symbol}</td>
                         <td className="py-3 px-4 text-slate-300">{stock.name}</td>
-                        <td className="py-3 px-4 text-right text-white">₹{stock.price.toFixed(2)}</td>
+                        <td className="py-3 px-4 text-right text-white">{formatCurrency(stock.price)}</td>
                         <td className="py-3 px-4 text-right text-green-400 font-semibold">
-                          +₹{stock.change.toFixed(2)}
+                          +{formatCurrency(stock.change).replace('₹', '₹')}
                         </td>
                         <td className="py-3 px-4 text-right text-green-400 font-semibold">
-                          +{stock.changePercent.toFixed(2)}%
+                          {formatPercentage(stock.changePercent)}
                         </td>
                         <td className="py-3 px-4 text-right text-slate-400">
-                          {(stock.volume / 1000000).toFixed(2)}M
+                          {formatNumber(stock.volume / 1000000)}M
                         </td>
                       </tr>
                     ))}
@@ -406,15 +406,15 @@ export default function MarketPage() {
                       >
                         <td className="py-3 px-4 font-semibold text-white">{stock.symbol}</td>
                         <td className="py-3 px-4 text-slate-300">{stock.name}</td>
-                        <td className="py-3 px-4 text-right text-white">₹{stock.price.toFixed(2)}</td>
+                        <td className="py-3 px-4 text-right text-white">{formatCurrency(stock.price)}</td>
                         <td className="py-3 px-4 text-right text-red-400 font-semibold">
-                          -₹{Math.abs(stock.change).toFixed(2)}
+                          -{formatCurrency(Math.abs(stock.change))}
                         </td>
                         <td className="py-3 px-4 text-right text-red-400 font-semibold">
-                          {stock.changePercent.toFixed(2)}%
+                          {formatPercentage(stock.changePercent)}
                         </td>
                         <td className="py-3 px-4 text-right text-slate-400">
-                          {(stock.volume / 1000000).toFixed(2)}M
+                          {formatNumber(stock.volume / 1000000)}M
                         </td>
                       </tr>
                     ))}

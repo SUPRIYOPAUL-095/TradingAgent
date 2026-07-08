@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts'
+import { formatCurrency } from '@/lib/utils'
 
 interface ChartSectionProps {
   data?: Array<{ date: string; price: number }>
@@ -34,12 +35,12 @@ export default function ChartSection({ data }: ChartSectionProps) {
         <div className="flex gap-6">
           <div className="text-right">
             <p className="text-slate-400 text-xs mb-1">Average</p>
-            <p className="text-lg font-bold text-blue-400">₹{avgPrice}</p>
+            <p className="text-lg font-bold text-blue-400">{formatCurrency(avgPrice)}</p>
           </div>
           <div className="text-right">
             <p className="text-slate-400 text-xs mb-1">Range</p>
             <p className="text-lg font-bold text-slate-300">
-              ₹{minPrice} - ₹{maxPrice}
+              {formatCurrency(minPrice)} - {formatCurrency(maxPrice)}
             </p>
           </div>
         </div>
@@ -64,14 +65,14 @@ export default function ChartSection({ data }: ChartSectionProps) {
                 borderRadius: '8px',
                 color: '#fff',
               }}
-              formatter={(value) => [`₹${value}`, 'Price']}
+              formatter={(value: number) => [formatCurrency(value), 'Price']}
             />
             <ReferenceLine
               y={avgPrice}
               stroke="#6366f1"
               strokeDasharray="5 5"
               opacity={0.5}
-              label={{ value: `Avg: ₹${avgPrice}`, position: 'right', fill: '#6366f1', fontSize: 12 }}
+              label={{ value: `Avg: ${formatCurrency(avgPrice)}`, position: 'right', fill: '#6366f1', fontSize: 12 }}
             />
             <Line
               type="monotone"
@@ -91,21 +92,21 @@ export default function ChartSection({ data }: ChartSectionProps) {
       <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-slate-700/30 rounded-lg p-4">
           <p className="text-slate-400 text-xs mb-2">High</p>
-          <p className="text-lg font-bold text-green-400">₹{maxPrice}</p>
+          <p className="text-lg font-bold text-green-400">{formatCurrency(maxPrice)}</p>
         </div>
         <div className="bg-slate-700/30 rounded-lg p-4">
           <p className="text-slate-400 text-xs mb-2">Low</p>
-          <p className="text-lg font-bold text-red-400">₹{minPrice}</p>
+          <p className="text-lg font-bold text-red-400">{formatCurrency(minPrice)}</p>
         </div>
         <div className="bg-slate-700/30 rounded-lg p-4">
           <p className="text-slate-400 text-xs mb-2">Average</p>
-          <p className="text-lg font-bold text-blue-400">₹{avgPrice}</p>
+          <p className="text-lg font-bold text-blue-400">{formatCurrency(avgPrice)}</p>
         </div>
         <div className="bg-slate-700/30 rounded-lg p-4">
           <p className="text-slate-400 text-xs mb-2">Change</p>
           <p className={`text-lg font-bold ${chartData[chartData.length - 1].price > chartData[0].price ? 'text-green-400' : 'text-red-400'}`}>
-            {chartData[chartData.length - 1].price > chartData[0].price ? '+' : ''}
-            ₹{Math.abs(chartData[chartData.length - 1].price - chartData[0].price)}
+            {chartData[chartData.length - 1].price > chartData[0].price ? '+' : '-'}
+            {formatCurrency(Math.abs(chartData[chartData.length - 1].price - chartData[0].price))}
           </p>
         </div>
       </div>

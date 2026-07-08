@@ -1,18 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  TrendingUp,
-  TrendingDown,
-  Calendar,
-  BarChart3,
-  Target,
-  DollarSign,
-  Percent,
-  Award,
-  ArrowUp,
-  ArrowDown,
-} from 'lucide-react'
+import { History, TrendingUp, TrendingDown, Filter, Download, ArrowUpRight, ArrowDownRight, Calendar, BarChart3, Target, DollarSign, Percent, Award, ArrowUp, ArrowDown } from 'lucide-react'
+import { formatNumber, formatPercentage } from '@/lib/utils'
 
 interface TradeRecord {
   id: string
@@ -77,11 +67,10 @@ export default function HistoryPage() {
         {/* Performance Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700 hover:border-slate-600 transition">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-slate-400 text-sm font-medium">Total Return</p>
-              <DollarSign className="text-green-400" size={20} />
+            <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/5 rounded-xl p-6 border border-green-500/20">
+              <p className="text-slate-400 text-sm mb-2">Total Return</p>
+              <p className="text-3xl font-bold text-green-400">{formatPercentage(backtestResults.totalReturn)}</p>
             </div>
-            <p className="text-3xl font-bold text-green-400">{backtestResults.totalReturn.toFixed(1)}%</p>
             <p className="text-xs text-slate-500 mt-2">On invested capital</p>
           </div>
 
@@ -90,16 +79,15 @@ export default function HistoryPage() {
               <p className="text-slate-400 text-sm font-medium">Win Rate</p>
               <Target className="text-blue-400" size={20} />
             </div>
-            <p className="text-3xl font-bold text-blue-400">{backtestResults.winRate.toFixed(1)}%</p>
+            <p className="text-3xl font-bold text-blue-400">{formatPercentage(backtestResults.winRate)}</p>
             <p className="text-xs text-slate-500 mt-2">{backtestResults.totalTrades} trades analyzed</p>
           </div>
 
           <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700 hover:border-slate-600 transition">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-slate-400 text-sm font-medium">Profit Factor</p>
-              <BarChart3 className="text-purple-400" size={20} />
+            <div className="bg-gradient-to-br from-purple-500/10 to-fuchsia-500/5 rounded-xl p-6 border border-purple-500/20">
+              <p className="text-slate-400 text-sm mb-2">Profit Factor</p>
+              <p className="text-3xl font-bold text-purple-400">{formatNumber(backtestResults.profitFactor)}</p>
             </div>
-            <p className="text-3xl font-bold text-purple-400">{backtestResults.profitFactor.toFixed(2)}</p>
             <p className="text-xs text-slate-500 mt-2">Gross profit / Gross loss</p>
           </div>
 
@@ -108,7 +96,7 @@ export default function HistoryPage() {
               <p className="text-slate-400 text-sm font-medium">Max Drawdown</p>
               <TrendingDown className="text-red-400" size={20} />
             </div>
-            <p className="text-3xl font-bold text-red-400">{backtestResults.maxDrawdown.toFixed(1)}%</p>
+            <p className="text-3xl font-bold text-red-400">{formatPercentage(backtestResults.maxDrawdown)}</p>
             <p className="text-xs text-slate-500 mt-2">Largest peak-to-trough</p>
           </div>
         </div>
@@ -120,7 +108,7 @@ export default function HistoryPage() {
               <p className="text-slate-400 text-sm font-medium">Avg Win</p>
               <TrendingUp className="text-green-400" size={18} />
             </div>
-            <p className="text-2xl font-bold text-green-400">+{backtestResults.avgWin.toFixed(2)}%</p>
+            <p className="text-2xl font-bold text-green-400">{formatPercentage(backtestResults.avgWin)}</p>
           </div>
 
           <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700 hover:border-slate-600 transition">
@@ -128,7 +116,7 @@ export default function HistoryPage() {
               <p className="text-slate-400 text-sm font-medium">Avg Loss</p>
               <TrendingDown className="text-red-400" size={18} />
             </div>
-            <p className="text-2xl font-bold text-red-400">{backtestResults.avgLoss.toFixed(2)}%</p>
+            <p className="text-2xl font-bold text-red-400">{formatPercentage(backtestResults.avgLoss)}</p>
           </div>
 
           <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700 hover:border-slate-600 transition">
@@ -136,7 +124,7 @@ export default function HistoryPage() {
               <p className="text-slate-400 text-sm font-medium">Sharpe Ratio</p>
               <Award className="text-yellow-400" size={18} />
             </div>
-            <p className="text-2xl font-bold text-yellow-400">{backtestResults.sharpeRatio.toFixed(2)}</p>
+            <p className="text-2xl font-bold text-yellow-400">{formatNumber(backtestResults.sharpeRatio)}</p>
           </div>
         </div>
 
@@ -210,12 +198,12 @@ export default function HistoryPage() {
                     <td className="px-6 py-4 text-slate-300">
                       {new Date(trade.entryDate).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 text-right text-white">₹{trade.entryPrice.toFixed(0)}</td>
-                    <td className="px-6 py-4 text-right text-white">₹{trade.exitPrice.toFixed(0)}</td>
-                    <td className={`px-6 py-4 text-right font-semibold ${
-                      trade.returnPercent > 0 ? 'text-green-400' : 'text-red-400'
-                    }`}>
-                      {trade.returnPercent > 0 ? '+' : ''}{trade.returnPercent.toFixed(2)}%
+                    <td className="px-6 py-4 text-right text-white">₹{formatNumber(trade.entryPrice)}</td>
+                    <td className="px-6 py-4 text-right text-white">₹{formatNumber(trade.exitPrice)}</td>
+                    <td className="px-6 py-4 text-right">
+                      <span className={`font-bold ${trade.returnPercent > 0 ? 'text-green-400' : trade.returnPercent < 0 ? 'text-red-400' : 'text-slate-300'}`}>
+                        {formatPercentage(trade.returnPercent)}
+                      </span>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
