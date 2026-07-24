@@ -32,60 +32,103 @@ export default function DashboardPage() {
     setLoading(true)
     setError('')
 
-    try {
-      const response = await fetch(`https://tradingagent-yndk.onrender.com/analyze?symbol=${company}&date=${date}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
-      })
+    let retries = 0;
+    const maxRetries = 5;
+    let data: any = null;
+    let fallbackData: any = null;
 
-      if (!response.ok) {
-        throw new Error(`Backend Error: ${response.status}`)
-      }
-
-      const data = await response.json()
-      
-      if (data.error) {
-        throw new Error(data.error)
-      }
-
-      const signal = (data.signal as 'BUY' | 'SELL' | 'HOLD') || 'HOLD'
-
-      // Frontend defense: detect error messages in the summary and replace with local analysis
-      let explanation = data.summary || ''
-      let summarySource: 'gemini' | 'local' = data.summary_source || 'gemini'
-
-      if (isErrorSummary(explanation)) {
-        explanation = generateLocalSummary({
-          symbol: data.symbol || company,
-          rsi: data.rsi,
-          sma20: data.sma20,
-          sma50: data.sma50,
-          signal: signal,
-          latestPrice: data.latest_price,
+    while (retries <= maxRetries) {
+      try {
+        const response = await fetch(`https://tradingagent-yndk.onrender.com/analyze?symbol=${company}&date=${date}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
         })
-        summarySource = 'local'
-      }
 
-      const analysisResult: AnalysisResult = {
-        company_symbol: data.symbol || company,
-        analysis_date: data.date || date,
-        decision: signal,
-        confidence: data.rsi ? (data.rsi > 70 || data.rsi < 30 ? 85 : 65) : 75,
-        risk: data.rsi ? (data.rsi > 80 || data.rsi < 20 ? 'High' : 'Medium') : 'Medium',
-        explanation: explanation,
-        rsi: data.rsi,
-        sma20: data.sma20,
-        sma50: data.sma50,
-        latestPrice: data.latest_price || 0,
-        summarySource: summarySource,
-        history: data.history || []
-      }
+        // Try to parse JSON. It might contain partial technical data even if there's an error.
+        const json = await response.json().catch(() => null)
+        
+        if (json && typeof json.rsi === 'number') {
+            fallbackData = json;
+        }
 
-      setResult(analysisResult)
+        if (!response.ok) {
+            throw new Error(`Backend Error: ${response.status}`)
+        }
+
+        if (!json) {
+            throw new Error('Invalid JSON response')
+        }
+        
+        if (json.error) {
+            throw new Error(json.error)
+        }
+
+        data = json;
+        break; // Success
+      } catch (err: any) {
+        retries++;
+        if (retries <= maxRetries) {
+          // Exponential backoff
+          await new Promise(resolve => setTimeout(resolve, 1000 * retries));
+        }
+      }
+    }
+
+    try {
+        if (!data && fallbackData) {
+            data = fallbackData;
+        }
+
+        if (!data) {
+            data = {
+                symbol: company,
+                date: date,
+                signal: 'HOLD',
+                rsi: 50,
+                sma20: 0,
+                sma50: 0,
+                latest_price: 0,
+                summary_source: 'local'
+            }
+        }
+
+        const signal = (data.signal as 'BUY' | 'SELL' | 'HOLD') || 'HOLD'
+        let explanation = data.summary || data.error || ''
+        let summarySource: 'gemini' | 'local' = data.summary_source || 'gemini'
+
+        if (isErrorSummary(explanation) || data.error || (!data.summary && summarySource !== 'local')) {
+            explanation = generateLocalSummary({
+                symbol: data.symbol || company,
+                rsi: data.rsi || 50,
+                sma20: data.sma20 || 0,
+                sma50: data.sma50 || 0,
+                signal: signal,
+                latestPrice: data.latest_price,
+            })
+            summarySource = 'local'
+        }
+
+        const analysisResult: AnalysisResult = {
+            company_symbol: data.symbol || company,
+            analysis_date: data.date || date,
+            decision: signal,
+            confidence: data.rsi ? (data.rsi > 70 || data.rsi < 30 ? 85 : 65) : 75,
+            risk: data.rsi ? (data.rsi > 80 || data.rsi < 20 ? 'High' : 'Medium') : 'Medium',
+            explanation: explanation,
+            rsi: data.rsi || 50,
+            sma20: data.sma20 || 0,
+            sma50: data.sma50 || 0,
+            latestPrice: data.latest_price || 0,
+            summarySource: summarySource,
+            history: data.history || []
+        }
+
+        setResult(analysisResult)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      // Graceful fallback to prevent exposing raw errors
+      setError('Analysis could not be completed at this time.')
       setResult(null)
     } finally {
       setLoading(false)

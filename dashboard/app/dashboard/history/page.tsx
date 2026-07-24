@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { History, TrendingUp, TrendingDown, Filter, Download, ArrowUpRight, ArrowDownRight, Calendar, BarChart3, Target, DollarSign, Percent, Award, ArrowUp, ArrowDown } from 'lucide-react'
-import { formatNumber, formatPercentage } from '@/lib/utils'
+import { formatNumber, formatPercentage, formatCurrency } from '@/lib/utils'
 
 interface TradeRecord {
   id: string
@@ -198,8 +198,8 @@ export default function HistoryPage() {
                     <td className="px-6 py-4 text-slate-300">
                       {new Date(trade.entryDate).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 text-right text-white">₹{formatNumber(trade.entryPrice)}</td>
-                    <td className="px-6 py-4 text-right text-white">₹{formatNumber(trade.exitPrice)}</td>
+                    <td className="px-6 py-4 text-right text-white">{formatCurrency(trade.entryPrice)}</td>
+                    <td className="px-6 py-4 text-right text-white">{formatCurrency(trade.exitPrice)}</td>
                     <td className="px-6 py-4 text-right">
                       <span className={`font-bold ${trade.returnPercent > 0 ? 'text-green-400' : trade.returnPercent < 0 ? 'text-red-400' : 'text-slate-300'}`}>
                         {formatPercentage(trade.returnPercent)}

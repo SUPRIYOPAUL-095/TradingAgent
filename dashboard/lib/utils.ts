@@ -4,12 +4,14 @@
  * Format a number as Indian Rupees with proper formatting
  */
 export function formatCurrency(value: number): string {
+  // Pre-round to 2 decimal places to prevent floating-point precision bugs in some environments
+  const roundedValue = Number(Number(value).toFixed(2))
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(Number(value))
+  }).format(roundedValue)
 }
 
 /**
